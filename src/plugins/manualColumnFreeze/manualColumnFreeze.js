@@ -1,6 +1,7 @@
 import BasePlugin from './../_base';
 import {registerPlugin} from './../../plugins';
 import {arrayEach} from './../../helpers/array';
+import ColumnsMapper from '.././manualColumnMove/columnsMapper';
 import freezeColumnItem from './contextMenuItem/freezeColumn';
 import unfreezeColumnItem from './contextMenuItem/unfreezeColumn';
 
@@ -29,9 +30,11 @@ class ManualColumnFreeze extends BasePlugin {
      */
     this.frozenColumnsBasePositions = [];
     /**
-     * Reference to the `ManualColumnMove` plugin.
+     * Object containing visual row indexes mapped to data source indexes.
+     *
+     * @type {RowsMapper}
      */
-    this.manualColumnMovePlugin = void 0;
+    this.columnsMapper = new ColumnsMapper(this);
   }
 
   /**
@@ -52,8 +55,10 @@ class ManualColumnFreeze extends BasePlugin {
     }
 
     this.addHook('afterContextMenuDefaultOptions', (options) => this.addContextMenuEntry(options));
-    this.addHook('afterInit', () => this.onAfterInit());
-    this.addHook('beforeColumnMove', (rows, target) => this.onBeforeColumnMove(rows, target));
+    this.addHook('beforeColumnMove', (columns, target) => this.onBeforeColumnMove(columns, target));
+    this.addHook('afterLoadData', () => this.onAfterLoadData());
+    this.addHook('modifyCol', (col, source) => this.onModifyCol(col, source));
+    this.addHook('unmodifyCol', (column) => this.onUnmodifyCol(column));
 
     super.enablePlugin();
   }
@@ -66,6 +71,8 @@ class ManualColumnFreeze extends BasePlugin {
 
     priv.afterFirstUse = false;
     priv.moveByFreeze = false;
+
+    this.columnsMapper.clearMap();
 
     super.disablePlugin();
   }
@@ -99,12 +106,13 @@ class ManualColumnFreeze extends BasePlugin {
 
     priv.moveByFreeze = true;
 
-    if (column !== this.getMovePlugin().columnsMapper.getValueByIndex(column)) {
-      this.frozenColumnsBasePositions[settings.fixedColumnsLeft] = column;
-    }
+    this.frozenColumnsBasePositions[settings.fixedColumnsLeft] = column;
 
-    this.getMovePlugin().moveColumn(column, settings.fixedColumnsLeft++);
+    settings.fixedColumnsLeft++;
 
+    let start = settings.fixedColumnsLeft - 1;
+
+    this.columnsMapper.swapIndexes(column, start);
   }
 
   /**
@@ -115,6 +123,7 @@ class ManualColumnFreeze extends BasePlugin {
   unfreezeColumn(column) {
     let priv = privatePool.get(this);
     let settings = this.hot.getSettings();
+    let start;
 
     if (!priv.afterFirstUse) {
       priv.afterFirstUse = true;
@@ -124,26 +133,25 @@ class ManualColumnFreeze extends BasePlugin {
       return; // not fixed
     }
 
-    let returnCol = this.getBestColumnReturnPosition(column);
-
     priv.moveByFreeze = true;
     settings.fixedColumnsLeft--;
 
-    this.getMovePlugin().moveColumn(column, returnCol + 1);
-  }
+    let returnCol = this.getBestColumnReturnPosition(column);
 
-  /**
-   * Get the reference to the ManualColumnMove plugin.
-   *
-   * @private
-   * @returns {Object}
-   */
-  getMovePlugin() {
-    if (!this.manualColumnMovePlugin) {
-      this.manualColumnMovePlugin = this.hot.getPlugin('manualColumnMove');
+    if ((settings.fixedColumnsLeft > 1) && (returnCol >= 1)) {
+      start = returnCol + settings.fixedColumnsLeft;
+
+    } else if ((settings.fixedColumnsLeft === 1) && (returnCol === 0)) {
+      start = settings.fixedColumnsLeft + (this.columnsMapper.getValueByIndex(column) === 0 ? 1 : this.columnsMapper.getValueByIndex(column));
+
+    } else if ((settings.fixedColumnsLeft === 0) && (returnCol < 0)) {
+      start = this.columnsMapper.getValueByIndex(column) + this.columnsMapper.getIndexByValue(column);
+
+    } else {
+      start = returnCol + 1;
     }
 
-    return this.manualColumnMovePlugin;
+    this.columnsMapper.swapIndexes(column, start, true);
   }
 
   /**
@@ -153,18 +161,17 @@ class ManualColumnFreeze extends BasePlugin {
    * @param {Number} column Visual column index.
    */
   getBestColumnReturnPosition(column) {
-    let movePlugin = this.getMovePlugin();
     let settings = this.hot.getSettings();
     let i = settings.fixedColumnsLeft;
-    let j = movePlugin.columnsMapper.getValueByIndex(i);
+    let j = this.columnsMapper.getValueByIndex(i);
     let initialCol;
 
     if (this.frozenColumnsBasePositions[column] == null) {
-      initialCol = movePlugin.columnsMapper.getValueByIndex(column);
+      initialCol = this.columnsMapper.getValueByIndex(column);
 
       while (j < initialCol) {
         i++;
-        j = movePlugin.columnsMapper.getValueByIndex(i);
+        j = this.columnsMapper.getValueByIndex(i);
       }
 
     } else {
@@ -173,13 +180,45 @@ class ManualColumnFreeze extends BasePlugin {
 
       while (j <= initialCol) {
         i++;
-        j = movePlugin.columnsMapper.getValueByIndex(i);
+        j = this.columnsMapper.getValueByIndex(i);
       }
       i = j;
     }
 
     return i - 1;
   }
+
+  /**
+   * This method checks arrayMap from columnsMapper and updates the columnsMapper if it's necessary.
+   *
+   * @private
+   */
+  updateColumnsMapper() {
+    let countCols = this.hot.countSourceCols();
+    let columnsMapperLen = this.columnsMapper._arrayMap.length;
+
+    if (columnsMapperLen === 0) {
+      this.columnsMapper.createMap(countCols || this.hot.getSettings().startCols);
+
+    } else if (columnsMapperLen < countCols) {
+      let diff = countCols - columnsMapperLen;
+
+      this.columnsMapper.insertItems(columnsMapperLen, diff);
+
+    } else if (columnsMapperLen > countCols) {
+      let maxIndex = countCols - 1;
+      let columnsToRemove = [];
+
+      arrayEach(this.columnsMapper._arrayMap, (value, index) => {
+        if (value > maxIndex) {
+          columnsToRemove.push(index);
+        }
+      });
+
+      this.columnsMapper.removeItems(columnsToRemove);
+    }
+  }
+
   /**
    * Add the manualColumnFreeze context menu entries.
    *
@@ -195,14 +234,42 @@ class ManualColumnFreeze extends BasePlugin {
   }
 
   /**
-   * Enabling `manualColumnMove` plugin on `afterInit` hook.
+   * `afterLoadData` hook callback.
    *
    * @private
    */
-  onAfterInit() {
-    if (!this.getMovePlugin().isEnabled()) {
-      this.getMovePlugin().enablePlugin();
+  onAfterLoadData() {
+    this.updateColumnsMapper();
+  }
+
+  /**
+   * 'modifyCol' hook callback.
+   *
+   * @private
+   * @param {Number} column Visual column index.
+   * @returns {Number} Physical column index.
+   */
+  onModifyCol(column, source) {
+    if (source !== this.pluginName) {
+      let columnInMapper = this.columnsMapper.getValueByIndex(column);
+
+      column = columnInMapper === null ? column : columnInMapper;
     }
+
+    return column;
+  }
+
+  /**
+   * 'unmodifyCol' hook callback.
+   *
+   * @private
+   * @param {Number} column Physical column index.
+   * @returns {Number} Visual column index.
+   */
+  onUnmodifyCol(column) {
+    let indexInMapper = this.columnsMapper.getIndexByValue(column);
+
+    return indexInMapper === null ? column : indexInMapper;
   }
 
   /**
@@ -212,7 +279,7 @@ class ManualColumnFreeze extends BasePlugin {
    * @param {Array} rows
    * @param {Number} target
    */
-  onBeforeColumnMove(rows, target) {
+  onBeforeColumnMove(columns, target) {
     let priv = privatePool.get(this);
 
     if (priv.afterFirstUse && !priv.moveByFreeze) {
@@ -220,7 +287,7 @@ class ManualColumnFreeze extends BasePlugin {
       let disallowMoving = target < frozenLen;
 
       if (!disallowMoving) {
-        arrayEach(rows, (value, index, array) => {
+        arrayEach(columns, (value, index, array) => {
           if (value < frozenLen) {
             disallowMoving = true;
             return false;
@@ -242,6 +309,7 @@ class ManualColumnFreeze extends BasePlugin {
    * Destroy plugin instance.
    */
   destroy() {
+    this.columnsMapper.destroy();
     super.destroy();
   }
 

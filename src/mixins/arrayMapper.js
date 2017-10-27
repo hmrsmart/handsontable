@@ -135,6 +135,33 @@ const arrayMapper = {
   },
 
   /**
+   * Swap indexes in arrayMapper.
+   *
+   * @param {Number} from index to move.
+   * @param {Number} start index to start.
+   * @param {Boolean} [reverse=false] Indicates whether the reversal operation is necessary.
+   */
+  swapIndexes(from, start, reverse = false) {
+    if (this.getValueByIndex(from) !== from) {
+      this._arrayMap.splice(start, 0, this.getValueByIndex(from));
+
+    } else {
+      this._arrayMap.splice(start, 0, from);
+    }
+
+    if (reverse) {
+      this._arrayMap.reverse();
+
+      this._arrayMap = [...new Set(this._arrayMap)];
+
+      this._arrayMap.reverse();
+
+    } else {
+      this._arrayMap = [...new Set(this._arrayMap)];
+    }
+  },
+
+  /**
    * Clear all stored index<->value information from an array.
    */
   clearMap() {

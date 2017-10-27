@@ -31,11 +31,10 @@ describe('manualColumnFreeze', () => {
       });
 
       var plugin = hot.getPlugin('manualColumnFreeze');
-      var movePlugin = hot.getPlugin('manualColumnMove');
 
       plugin.freezeColumn(5);
 
-      expect(movePlugin.columnsMapper.getValueByIndex(0)).toEqual(5);
+      expect(plugin.columnsMapper.getValueByIndex(0)).toEqual(5);
     });
   });
 
@@ -60,14 +59,13 @@ describe('manualColumnFreeze', () => {
       });
 
       var plugin = hot.getPlugin('manualColumnFreeze');
-      var movePlugin = hot.getPlugin('manualColumnMove');
 
       plugin.unfreezeColumn(0);
 
       expect(hot.getSettings().fixedColumnsLeft).toEqual(2);
-      expect(movePlugin.columnsMapper.getValueByIndex(0)).toEqual(1);
-      expect(movePlugin.columnsMapper.getValueByIndex(1)).toEqual(2);
-      expect(movePlugin.columnsMapper.getValueByIndex(2)).toEqual(0);
+      expect(plugin.columnsMapper.getValueByIndex(0)).toEqual(1);
+      expect(plugin.columnsMapper.getValueByIndex(1)).toEqual(2);
+      expect(plugin.columnsMapper.getValueByIndex(2)).toEqual(0);
     });
   });
 
@@ -137,95 +135,6 @@ describe('manualColumnFreeze', () => {
       expect(hot.getSettings().fixedColumnsLeft).toEqual(2);
       expect(hot.getDataAtCell(1, 1)).toEqual(dataAtCell);
 
-    });
-
-    it('should unfix the desired column (and revert it to it\'s original position) after clicking the \'unfreeze this column\' context menu entry', () => {
-      var hot = handsontable({
-        data: Handsontable.helper.createSpreadsheetData(10, 10),
-        manualColumnFreeze: true,
-        fixedColumnsLeft: 3,
-        manualColumnMove: [0, 2, 5, 3, 4, 1, 6, 7, 8, 9],
-        contextMenu: true,
-        rowHeaders: true
-      });
-
-      var dataAtCell = hot.getDataAtCell(1, 0);
-      expect(dataAtCell).toEqual('A2');
-      dataAtCell = hot.getDataAtCell(1, 1);
-      expect(dataAtCell).toEqual('C2');
-      dataAtCell = hot.getDataAtCell(1, 2);
-      expect(dataAtCell).toEqual('F2');
-
-      selectCell(1, 1);
-      contextMenu();
-
-      var freezeEntry = $(hot.getPlugin('contextMenu').menu.container).find('div').filter(function() {
-        return $(this).text() === 'Unfreeze this column';
-
-      });
-      freezeEntry.eq(0).simulate('mousedown');
-
-      expect(hot.getSettings().fixedColumnsLeft).toEqual(2);
-      dataAtCell = hot.getDataAtCell(1, 0);
-      expect(dataAtCell).toEqual('A2');
-      dataAtCell = hot.getDataAtCell(1, 1);
-      expect(dataAtCell).toEqual('F2');
-      dataAtCell = hot.getDataAtCell(1, 2);
-      expect(dataAtCell).toEqual('C2');
-
-      selectCell(1, 1);
-      contextMenu();
-
-      freezeEntry = $(hot.getPlugin('contextMenu').menu.container).find('div').filter(function() {
-        if ($(this).text() === 'Unfreeze this column') {
-          return true;
-        }
-        return false;
-      });
-      freezeEntry.eq(0).simulate('mousedown');
-
-      expect(hot.getSettings().fixedColumnsLeft).toEqual(1);
-      dataAtCell = hot.getDataAtCell(1, 0);
-      expect(dataAtCell).toEqual('A2');
-      dataAtCell = hot.getDataAtCell(1, 1);
-      expect(dataAtCell).toEqual('C2');
-      dataAtCell = hot.getDataAtCell(1, 2);
-      expect(dataAtCell).toEqual('D2');
-
-      dataAtCell = hot.getDataAtCell(1, 5);
-      expect(dataAtCell).toEqual('F2');
-
-      // Use the modified columns position.
-      hot.updateSettings({
-        fixedColumnsLeft: 0,
-        manualColumnMove: [0, 2, 5, 3, 4, 1, 6, 7, 8, 9],
-      });
-
-      hot.getSettings().fixedColumnsLeft = 0;
-
-      selectCell(1, 2);
-      contextMenu();
-      freezeEntry = $(hot.getPlugin('contextMenu').menu.container).find('div').filter(function() {
-        return $(this).text() === 'Freeze this column';
-      });
-
-      freezeEntry.eq(0).simulate('mousedown');
-
-      expect(hot.getSettings().fixedColumnsLeft).toEqual(1);
-      dataAtCell = hot.getDataAtCell(1, 0);
-      expect(dataAtCell).toEqual('F2');
-
-      selectCell(1, 0);
-      contextMenu();
-      freezeEntry = $(hot.getPlugin('contextMenu').menu.container).find('div').filter(function() {
-        return $(this).text() === 'Unfreeze this column';
-      });
-
-      freezeEntry.eq(0).simulate('mousedown');
-
-      expect(hot.getSettings().fixedColumnsLeft).toEqual(0);
-      dataAtCell = hot.getDataAtCell(1, 2);
-      expect(dataAtCell).toEqual('F2');
     });
   });
 
