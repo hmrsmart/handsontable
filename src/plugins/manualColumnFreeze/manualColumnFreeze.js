@@ -123,7 +123,6 @@ class ManualColumnFreeze extends BasePlugin {
   unfreezeColumn(column) {
     let priv = privatePool.get(this);
     let settings = this.hot.getSettings();
-    let start;
 
     if (!priv.afterFirstUse) {
       priv.afterFirstUse = true;
@@ -134,24 +133,12 @@ class ManualColumnFreeze extends BasePlugin {
     }
 
     priv.moveByFreeze = true;
-    settings.fixedColumnsLeft--;
 
     let returnCol = this.getBestColumnReturnPosition(column);
 
-    if ((settings.fixedColumnsLeft > 1) && (returnCol >= 1)) {
-      start = returnCol + settings.fixedColumnsLeft;
+    settings.fixedColumnsLeft--;
 
-    } else if ((settings.fixedColumnsLeft === 1) && (returnCol === 0)) {
-      start = settings.fixedColumnsLeft + (this.columnsMapper.getValueByIndex(column) === 0 ? 1 : this.columnsMapper.getValueByIndex(column));
-
-    } else if ((settings.fixedColumnsLeft === 0) && (returnCol < 0)) {
-      start = this.columnsMapper.getValueByIndex(column) + this.columnsMapper.getIndexByValue(column);
-
-    } else {
-      start = returnCol + 1;
-    }
-
-    this.columnsMapper.swapIndexes(column, start, true);
+    this.columnsMapper.swapIndexes(column, returnCol + 1, true);
   }
 
   /**

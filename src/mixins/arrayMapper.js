@@ -1,4 +1,4 @@
-import {arrayEach, arrayReduce, arrayMap, arrayMax} from './../helpers/array';
+import {arrayEach, arrayReduce, arrayMap, arrayMax, arrayUnique, arrayUniqueFromBeind} from './../helpers/array';
 import {defineGetter} from './../helpers/object';
 import {rangeEach} from './../helpers/number';
 
@@ -150,14 +150,10 @@ const arrayMapper = {
     }
 
     if (reverse) {
-      this._arrayMap.reverse();
-
-      this._arrayMap = [...new Set(this._arrayMap)];
-
-      this._arrayMap.reverse();
+      this._arrayMap = arrayUniqueFromBeind(this._arrayMap);
 
     } else {
-      this._arrayMap = [...new Set(this._arrayMap)];
+      this._arrayMap = arrayUnique(this._arrayMap);
     }
   },
 
