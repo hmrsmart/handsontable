@@ -220,9 +220,9 @@ export function arrayUnique(array) {
  * @param {Array} array The array to process.
  * @returns {Array}
  */
-export function arrayUniqueFromBeind(array) {
-  let unique = [],
-    index = array.length;
+export function arrayUniqueFromBehind(array) {
+  const unique = [];
+  let index = array.length;
 
   while (index--) {
     let value = array[index];

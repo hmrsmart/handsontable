@@ -12,6 +12,71 @@ describe('manualColumnFreeze', () => {
     }
   });
 
+  describe('updateSettings', () => {
+    it('should enable the plugin in the initial config', () => {
+      const hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(4, 4),
+        manualColumnFreeze: true
+      });
+
+      expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(true);
+    });
+
+    it('should enable the plugin using updateSettings', () => {
+      const hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(4, 4)
+      });
+
+      expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(false);
+
+      updateSettings({
+        manualColumnFreeze: true
+      });
+
+      expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(true);
+    });
+
+    it('should disable the plugin using updateSettings', () => {
+      const hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(4, 4),
+        manualColumnFreeze: true
+      });
+
+      expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(true);
+
+      updateSettings({
+        manualColumnFreeze: false
+      });
+
+      expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(false);
+    });
+
+    it('should update manualColumnFreeze in context menu items by using updateSettings', () => {
+      var hot = handsontable({
+        contextMenu: true,
+        manualColumnFreeze: true
+      });
+
+      contextMenu();
+
+      var items = $('.htContextMenu tbody td');
+      var actions = items.not('.htSeparator');
+
+      expect(actions.text()).toContain('Freeze this column');
+
+      hot.updateSettings({
+        manualColumnFreeze: false
+      });
+
+      contextMenu();
+
+      items = $('.htContextMenu tbody td');
+      actions = items.not('.htSeparator');
+
+      expect(actions.text()).not.toContain('Freeze this column');
+    });
+  });
+
   describe('freezeColumn', () => {
     it('should increase fixedColumnsLeft setting', () => {
       var hot = handsontable({

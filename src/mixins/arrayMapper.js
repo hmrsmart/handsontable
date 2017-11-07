@@ -1,4 +1,4 @@
-import {arrayEach, arrayReduce, arrayMap, arrayMax, arrayUnique, arrayUniqueFromBeind} from './../helpers/array';
+import {arrayEach, arrayReduce, arrayMap, arrayMax, arrayUnique, arrayUniqueFromBehind} from './../helpers/array';
 import {defineGetter} from './../helpers/object';
 import {rangeEach} from './../helpers/number';
 
@@ -138,19 +138,19 @@ const arrayMapper = {
    * Swap indexes in arrayMapper.
    *
    * @param {Number} from index to move.
-   * @param {Number} start index to start.
+   * @param {Number} to index to.
    * @param {Boolean} [reverse=false] Indicates whether the reversal operation is necessary.
    */
-  swapIndexes(from, start, reverse = false) {
+  swapIndexes(from, to, reverse = false) {
     if (this.getValueByIndex(from) !== from) {
-      this._arrayMap.splice(start, 0, this.getValueByIndex(from));
+      this._arrayMap.splice(to, 0, this.getValueByIndex(from));
 
     } else {
-      this._arrayMap.splice(start, 0, from);
+      this._arrayMap.splice(to, 0, from);
     }
 
     if (reverse) {
-      this._arrayMap = arrayUniqueFromBeind(this._arrayMap);
+      this._arrayMap = arrayUniqueFromBehind(this._arrayMap);
 
     } else {
       this._arrayMap = arrayUnique(this._arrayMap);

@@ -56,9 +56,14 @@ class ManualColumnFreeze extends BasePlugin {
 
     this.addHook('afterContextMenuDefaultOptions', (options) => this.addContextMenuEntry(options));
     this.addHook('beforeColumnMove', (columns, target) => this.onBeforeColumnMove(columns, target));
-    this.addHook('afterLoadData', () => this.onAfterLoadData());
     this.addHook('modifyCol', (col, source) => this.onModifyCol(col, source));
     this.addHook('unmodifyCol', (column) => this.onUnmodifyCol(column));
+
+    this.updateColumnsMapper();
+
+    if (this.hot.getSettings().contextMenu) {
+      this.hot.getPlugin('contextMenu').updatePlugin();
+    }
 
     super.enablePlugin();
   }
@@ -73,6 +78,7 @@ class ManualColumnFreeze extends BasePlugin {
     priv.moveByFreeze = false;
 
     this.columnsMapper.clearMap();
+    this.frozenColumnsBasePositions.length = 0;
 
     super.disablePlugin();
   }
@@ -108,9 +114,9 @@ class ManualColumnFreeze extends BasePlugin {
 
     this.frozenColumnsBasePositions[settings.fixedColumnsLeft] = column;
 
-    settings.fixedColumnsLeft++;
+    let start = settings.fixedColumnsLeft;
 
-    let start = settings.fixedColumnsLeft - 1;
+    settings.fixedColumnsLeft++;
 
     this.columnsMapper.swapIndexes(column, start);
   }
@@ -187,22 +193,6 @@ class ManualColumnFreeze extends BasePlugin {
     if (columnsMapperLen === 0) {
       this.columnsMapper.createMap(countCols || this.hot.getSettings().startCols);
 
-    } else if (columnsMapperLen < countCols) {
-      let diff = countCols - columnsMapperLen;
-
-      this.columnsMapper.insertItems(columnsMapperLen, diff);
-
-    } else if (columnsMapperLen > countCols) {
-      let maxIndex = countCols - 1;
-      let columnsToRemove = [];
-
-      arrayEach(this.columnsMapper._arrayMap, (value, index) => {
-        if (value > maxIndex) {
-          columnsToRemove.push(index);
-        }
-      });
-
-      this.columnsMapper.removeItems(columnsToRemove);
     }
   }
 
@@ -218,15 +208,6 @@ class ManualColumnFreeze extends BasePlugin {
       freezeColumnItem(this),
       unfreezeColumnItem(this)
     );
-  }
-
-  /**
-   * `afterLoadData` hook callback.
-   *
-   * @private
-   */
-  onAfterLoadData() {
-    this.updateColumnsMapper();
   }
 
   /**

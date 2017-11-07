@@ -166,6 +166,35 @@ class ContextMenu extends BasePlugin {
     this.enablePlugin();
 
     super.updatePlugin();
+
+    setTimeout(() => {
+      this.itemsFactory = new ItemsFactory(this.hot, ContextMenu.DEFAULT_ITEMS);
+
+      const settings = this.hot.getSettings().contextMenu;
+      let predefinedItems = {
+        items: this.itemsFactory.getItems(settings)
+      };
+
+      this.hot.runHooks('afterContextMenuDefaultOptions', predefinedItems);
+
+      this.itemsFactory.setPredefinedItems(predefinedItems.items);
+      let menuItems = this.itemsFactory.getItems(settings);
+
+      this.menu = new Menu(this.hot, {
+        className: 'htContextMenu',
+        keepInViewport: true
+      });
+      this.hot.runHooks('beforeContextMenuSetItems', menuItems);
+
+      this.menu.setMenuItems(menuItems);
+
+      this.menu.addLocalHook('afterOpen', () => this.onMenuAfterOpen());
+      this.menu.addLocalHook('afterClose', () => this.onMenuAfterClose());
+      this.menu.addLocalHook('executeCommand', (...params) => this.executeCommand.apply(this, params));
+
+      // Register all commands. Predefined and added by user or by plugins
+      arrayEach(menuItems, (command) => this.commandExecutor.registerCommand(command.key, command));
+    }, 0);
   }
 
   /**
