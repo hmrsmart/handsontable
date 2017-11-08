@@ -1,4 +1,4 @@
-import {arrayEach, arrayReduce, arrayMap, arrayMax, arrayUnique, arrayUniqueFromBehind} from './../helpers/array';
+import {arrayReduce, arrayMap, arrayMax} from './../helpers/array';
 import {defineGetter} from './../helpers/object';
 import {rangeEach} from './../helpers/number';
 
@@ -125,7 +125,6 @@ const arrayMapper = {
       if (row >= index) {
         row += amount;
       }
-
       return row;
     });
 
@@ -142,19 +141,16 @@ const arrayMapper = {
    * @param {Boolean} [reverse=false] Indicates whether the reversal operation is necessary.
    */
   swapIndexes(from, to, reverse = false) {
-    if (this.getValueByIndex(from) !== from) {
-      this._arrayMap.splice(to, 0, this.getValueByIndex(from));
-
-    } else {
-      this._arrayMap.splice(to, 0, from);
-    }
+    const start = this.getIndexByValue(from);
+    let destination;
 
     if (reverse) {
-      this._arrayMap = arrayUniqueFromBehind(this._arrayMap);
-
+      destination = this.removeItems(Math.min(from, start));
     } else {
-      this._arrayMap = arrayUnique(this._arrayMap);
+      destination = this.removeItems(Math.max(from, start));
     }
+
+    this._arrayMap.splice(to, 0, destination[0]);
   },
 
   /**

@@ -61,10 +61,6 @@ class ManualColumnFreeze extends BasePlugin {
 
     this.updateColumnsMapper();
 
-    if (this.hot.getSettings().contextMenu) {
-      this.hot.getPlugin('contextMenu').updatePlugin();
-    }
-
     super.enablePlugin();
   }
 
@@ -114,11 +110,11 @@ class ManualColumnFreeze extends BasePlugin {
 
     this.frozenColumnsBasePositions[settings.fixedColumnsLeft] = column;
 
-    let start = settings.fixedColumnsLeft;
+    let to = settings.fixedColumnsLeft;
 
     settings.fixedColumnsLeft++;
 
-    this.columnsMapper.swapIndexes(column, start);
+    this.columnsMapper.swapIndexes(this.getLogicalColumnIndex(column), to);
   }
 
   /**
@@ -140,45 +136,22 @@ class ManualColumnFreeze extends BasePlugin {
 
     priv.moveByFreeze = true;
 
-    let returnCol = this.getBestColumnReturnPosition(column);
-
     settings.fixedColumnsLeft--;
 
-    this.columnsMapper.swapIndexes(column, returnCol + 1, true);
+    let to = this.frozenColumnsBasePositions[column] || this.getLogicalColumnIndex(settings.fixedColumnsLeft);
+
+    this.columnsMapper.swapIndexes(column, to, true);
   }
 
   /**
-   * Estimates the most fitting return position for unfrozen column.
+   * Get the logical index of the provided column.
    *
    * @private
-   * @param {Number} column Visual column index.
+   * @param {Number} column
+   * @returns {Number}
    */
-  getBestColumnReturnPosition(column) {
-    let settings = this.hot.getSettings();
-    let i = settings.fixedColumnsLeft;
-    let j = this.columnsMapper.getValueByIndex(i);
-    let initialCol;
-
-    if (this.frozenColumnsBasePositions[column] == null) {
-      initialCol = this.columnsMapper.getValueByIndex(column);
-
-      while (j < initialCol) {
-        i++;
-        j = this.columnsMapper.getValueByIndex(i);
-      }
-
-    } else {
-      initialCol = this.frozenColumnsBasePositions[column];
-      this.frozenColumnsBasePositions[column] = void 0;
-
-      while (j <= initialCol) {
-        i++;
-        j = this.columnsMapper.getValueByIndex(i);
-      }
-      i = j;
-    }
-
-    return i - 1;
+  getLogicalColumnIndex(column) {
+    return this.hot.runHooks('modifyCol', column);
   }
 
   /**

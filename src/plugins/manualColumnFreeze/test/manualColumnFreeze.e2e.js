@@ -39,8 +39,11 @@ describe('manualColumnFreeze', () => {
     it('should disable the plugin using updateSettings', () => {
       const hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(4, 4),
+        contextMenu: true,
         manualColumnFreeze: true
       });
+
+      contextMenu();
 
       expect(hot.getPlugin('manualColumnFreeze').isEnabled()).toBe(true);
 
@@ -53,6 +56,7 @@ describe('manualColumnFreeze', () => {
 
     it('should update manualColumnFreeze in context menu items by using updateSettings', () => {
       var hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(10, 10),
         contextMenu: true,
         manualColumnFreeze: true
       });
@@ -81,8 +85,12 @@ describe('manualColumnFreeze', () => {
     it('should increase fixedColumnsLeft setting', () => {
       var hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(10, 10),
-        manualColumnFreeze: true
+        manualColumnFreeze: true,
+        contextMenu: true
       });
+
+      contextMenu();
+
       var plugin = hot.getPlugin('manualColumnFreeze');
       plugin.freezeColumn(4);
 
@@ -92,8 +100,11 @@ describe('manualColumnFreeze', () => {
     it('should freeze (make fixed) the column provided as an argument', () => {
       var hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(10, 10),
-        manualColumnFreeze: true
+        manualColumnFreeze: true,
+        contextMenu: true
       });
+
+      contextMenu();
 
       var plugin = hot.getPlugin('manualColumnFreeze');
 
@@ -108,8 +119,12 @@ describe('manualColumnFreeze', () => {
       var hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(10, 10),
         manualColumnFreeze: true,
+        contextMenu: true,
         fixedColumnsLeft: 1
       });
+
+      contextMenu();
+
       var plugin = hot.getPlugin('manualColumnFreeze');
 
       plugin.unfreezeColumn(0);
@@ -120,8 +135,11 @@ describe('manualColumnFreeze', () => {
       var hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(10, 10),
         manualColumnFreeze: true,
+        contextMenu: true,
         fixedColumnsLeft: 3
       });
+
+      contextMenu();
 
       var plugin = hot.getPlugin('manualColumnFreeze');
 

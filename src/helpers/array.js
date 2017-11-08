@@ -213,24 +213,3 @@ export function arrayUnique(array) {
 
   return unique;
 }
-
-/**
- * Unique values in the array - iterate from the end.
- *
- * @param {Array} array The array to process.
- * @returns {Array}
- */
-export function arrayUniqueFromBehind(array) {
-  const unique = [];
-  let index = array.length;
-
-  while (index--) {
-    let value = array[index];
-
-    if (unique.indexOf(value) === -1) {
-      unique.push(value);
-    }
-  }
-
-  return unique.reverse();
-}
