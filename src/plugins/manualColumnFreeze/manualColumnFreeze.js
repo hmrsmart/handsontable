@@ -140,6 +140,9 @@ class ManualColumnFreeze extends BasePlugin {
 
     let to = this.frozenColumnsBasePositions[column] || this.getLogicalColumnIndex(settings.fixedColumnsLeft);
 
+    delete this.frozenColumnsBasePositions[column];
+    this.frozenColumnsBasePositions = this.frozenColumnsBasePositions.filter(Number);
+
     this.columnsMapper.swapIndexes(column, to, true);
   }
 

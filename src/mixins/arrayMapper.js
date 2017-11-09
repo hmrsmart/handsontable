@@ -145,9 +145,9 @@ const arrayMapper = {
     let destination;
 
     if (reverse) {
-      destination = this.removeItems(Math.min(from, start));
+      destination = this.removeItems(from);
     } else {
-      destination = this.removeItems(Math.max(from, start));
+      destination = this.removeItems(start);
     }
 
     this._arrayMap.splice(to, 0, destination[0]);
