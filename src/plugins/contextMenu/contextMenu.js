@@ -136,25 +136,27 @@ class ContextMenu extends BasePlugin {
     super.enablePlugin();
 
     const delayedInitialization = () => {
-      this.hot.runHooks('afterContextMenuDefaultOptions', predefinedItems);
+      if (this.hot) {
+        this.hot.runHooks('afterContextMenuDefaultOptions', predefinedItems);
 
-      this.itemsFactory.setPredefinedItems(predefinedItems.items);
-      let menuItems = this.itemsFactory.getItems(settings);
+        this.itemsFactory.setPredefinedItems(predefinedItems.items);
+        let menuItems = this.itemsFactory.getItems(settings);
 
-      this.menu = new Menu(this.hot, {
-        className: 'htContextMenu',
-        keepInViewport: true
-      });
-      this.hot.runHooks('beforeContextMenuSetItems', menuItems);
+        this.menu = new Menu(this.hot, {
+          className: 'htContextMenu',
+          keepInViewport: true
+        });
+        this.hot.runHooks('beforeContextMenuSetItems', menuItems);
 
-      this.menu.setMenuItems(menuItems);
+        this.menu.setMenuItems(menuItems);
 
-      this.menu.addLocalHook('afterOpen', () => this.onMenuAfterOpen());
-      this.menu.addLocalHook('afterClose', () => this.onMenuAfterClose());
-      this.menu.addLocalHook('executeCommand', (...params) => this.executeCommand.apply(this, params));
+        this.menu.addLocalHook('afterOpen', () => this.onMenuAfterOpen());
+        this.menu.addLocalHook('afterClose', () => this.onMenuAfterClose());
+        this.menu.addLocalHook('executeCommand', (...params) => this.executeCommand.apply(this, params));
 
-      // Register all commands. Predefined and added by user or by plugins
-      arrayEach(menuItems, (command) => this.commandExecutor.registerCommand(command.key, command));
+        // Register all commands. Predefined and added by user or by plugins
+        arrayEach(menuItems, (command) => this.commandExecutor.registerCommand(command.key, command));
+      }
     };
 
     this.callOnPluginsReady(() => {

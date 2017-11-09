@@ -1,7 +1,7 @@
 import BasePlugin from './../_base';
 import {registerPlugin} from './../../plugins';
 import {arrayEach} from './../../helpers/array';
-import ColumnsMapper from '.././manualColumnMove/columnsMapper';
+import ColumnsMapper from './columnsMapper';
 import freezeColumnItem from './contextMenuItem/freezeColumn';
 import unfreezeColumnItem from './contextMenuItem/unfreezeColumn';
 
@@ -114,7 +114,7 @@ class ManualColumnFreeze extends BasePlugin {
 
     settings.fixedColumnsLeft++;
 
-    this.columnsMapper.swapIndexes(this.getLogicalColumnIndex(column), to);
+    this.columnsMapper.swapIndexes(column, to);
   }
 
   /**
@@ -134,27 +134,60 @@ class ManualColumnFreeze extends BasePlugin {
       return; // not fixed
     }
 
-    priv.moveByFreeze = true;
+    let returnCol = this.getBestColumnReturnPosition(column);
 
+    priv.moveByFreeze = true;
     settings.fixedColumnsLeft--;
 
-    let to = this.frozenColumnsBasePositions[column] || this.getLogicalColumnIndex(settings.fixedColumnsLeft);
-
-    delete this.frozenColumnsBasePositions[column];
-    this.frozenColumnsBasePositions = this.frozenColumnsBasePositions.filter(Number);
-
-    this.columnsMapper.swapIndexes(column, to, true);
+    this.columnsMapper.swapIndexes(column, returnCol);
   }
 
   /**
-   * Get the logical index of the provided column.
+   * Estimates the most fitting return position for unfrozen column.
    *
    * @private
-   * @param {Number} column
-   * @returns {Number}
+   * @param {Number} column Visual column index.
    */
-  getLogicalColumnIndex(column) {
-    return this.hot.runHooks('modifyCol', column);
+  getBestColumnReturnPosition(column) {
+    let settings = this.hot.getSettings();
+    let i = settings.fixedColumnsLeft;
+    let j = this.columnsMapper.getValueByIndex(i);
+    let initialCol;
+
+    if (this.frozenColumnsBasePositions[column] == null) {
+      initialCol = this.columnsMapper.getValueByIndex(column);
+
+      while (j < initialCol) {
+        i++;
+        j = this.columnsMapper.getValueByIndex(i);
+      }
+
+    } else {
+      initialCol = this.frozenColumnsBasePositions[column];
+      this.frozenColumnsBasePositions[column] = void 0;
+
+      while (j <= initialCol) {
+        i++;
+        j = this.columnsMapper.getValueByIndex(i);
+      }
+      i = j;
+    }
+
+    return i - 1;
+  }
+
+  /**
+   * Add the manualColumnFreeze context menu entries.
+   *
+   * @private
+   * @param {Object} options Context menu options.
+   */
+  addContextMenuEntry(options) {
+    options.items.push(
+      {name: '---------'},
+      freezeColumnItem(this),
+      unfreezeColumnItem(this)
+    );
   }
 
   /**
@@ -170,20 +203,6 @@ class ManualColumnFreeze extends BasePlugin {
       this.columnsMapper.createMap(countCols || this.hot.getSettings().startCols);
 
     }
-  }
-
-  /**
-   * Add the manualColumnFreeze context menu entries.
-   *
-   * @private
-   * @param {Object} options Context menu options.
-   */
-  addContextMenuEntry(options) {
-    options.items.push(
-      {name: '---------'},
-      freezeColumnItem(this),
-      unfreezeColumnItem(this)
-    );
   }
 
   /**
