@@ -12,69 +12,6 @@ describe('ContextMenu', () => {
     }
   });
 
-  it('should update context menu items by calling `updateSettings` method', () => {
-    var hot = handsontable({
-      contextMenu: ['row_above', 'row_below', '---------', 'remove_row'],
-      height: 100
-    });
-
-    contextMenu();
-
-    var items = $('.htContextMenu tbody td');
-    var actions = items.not('.htSeparator');
-    var separators = items.filter('.htSeparator');
-
-    expect(actions.length).toEqual(3);
-    expect(separators.length).toEqual(1);
-
-    expect(actions.text()).toEqual([
-      'Insert row above',
-      'Insert row below',
-      'Remove row',
-    ].join(''));
-
-    hot.updateSettings({
-      contextMenu: ['remove_row']
-    });
-
-    contextMenu();
-
-    items = $('.htContextMenu tbody td');
-    actions = items.not('.htSeparator');
-    separators = items.filter('.htSeparator');
-
-    expect(actions.length).toEqual(1);
-    expect(separators.length).toEqual(0);
-
-    expect(actions.text()).toEqual([
-      'Remove row',
-    ].join(''));
-
-    hot.updateSettings({
-      contextMenu: {
-        items: {
-          remove_col: true,
-          hsep1: '---------',
-          custom: {name: 'My custom item'},
-        }
-      }
-    });
-
-    contextMenu();
-
-    items = $('.htContextMenu tbody td');
-    actions = items.not('.htSeparator');
-    separators = items.filter('.htSeparator');
-
-    expect(actions.length).toEqual(2);
-    expect(separators.length).toEqual(1);
-
-    expect(actions.text()).toEqual([
-      'Remove column',
-      'My custom item',
-    ].join(''));
-  });
-
   describe('menu opening', () => {
     it('should open menu after right click on table cell', () => {
       var hot = handsontable({
@@ -239,7 +176,9 @@ describe('ContextMenu', () => {
 
       contextMenu();
 
-      expect($('.htContextMenu').is(':visible')).toBe(true);
+      setTimeout(() => {
+        expect($('.htContextMenu').is(':visible')).toBe(true);
+      }, 200);
     });
 
     it('should reenable menu with updateSettings when it was disabled in constructor', () => {
@@ -260,7 +199,9 @@ describe('ContextMenu', () => {
 
       contextMenu();
 
-      expect($('.htContextMenu').is(':visible')).toBe(true);
+      setTimeout(() => {
+        expect($('.htContextMenu').is(':visible')).toBe(true);
+      }, 300);
     });
 
     it('should disable menu with updateSettings when it was enabled in constructor', () => {
@@ -376,7 +317,7 @@ describe('ContextMenu', () => {
   });
 
   describe('subMenu', () => {
-    it('should not open subMenu immediately', (done) => {
+    it('should not open subMenu immediately', () => {
       var hot = handsontable({
         data: Handsontable.helper.createSpreadsheetData(4, 4),
         contextMenu: true,
@@ -390,13 +331,6 @@ describe('ContextMenu', () => {
       var contextSubMenu = $(`.htContextMenuSub_${item.text()}`).find('tbody td');
 
       expect(contextSubMenu.length).toEqual(0);
-
-      setTimeout(() => {
-        var contextSubMenu = $(`.htContextMenuSub_${item.text()}`).find('tbody td');
-
-        expect(contextSubMenu.length).toEqual(0);
-        done();
-      }, 100);
     });
 
     it('should open subMenu with delay', (done) => {
@@ -417,7 +351,7 @@ describe('ContextMenu', () => {
 
         expect(contextSubMenu.length).toEqual(1);
         done();
-      }, 350); // menu opens after 300ms
+      }, 400); // menu opens after 400ms
     });
 
     it('should NOT open subMenu if there is no subMenu for item', () => {
@@ -582,7 +516,7 @@ describe('ContextMenu', () => {
 
         expect(contextSubMenu.offset().left).toBeGreaterThan(contextMenuRoot.offset().left + contextMenuRoot.width() - 30); // 30 - scroll
         done();
-      }, 350); // menu opens after 300ms
+      }, 500); // menu opens after 300ms
     });
 
     it('should open subMenu on the left-bottom of main menu if there\'s free space', (done) => {
@@ -610,7 +544,7 @@ describe('ContextMenu', () => {
         expect(parseInt(contextSubMenu.offset().top, 10)).toBeAroundValue(parseInt(item.offset().top, 10) - 1);
         expect(parseInt(contextSubMenu.offset().left, 10)).toBeLessThan(contextMenuRoot.offset().left - contextSubMenu.width() + 30); // 30 - scroll
         done();
-      }, 350); // menu opens after 300ms
+      }, 600); // menu opens after 300ms
     });
 
     it('should open subMenu on the right-bottom of main menu if there\'s free space', (done) => {
@@ -639,7 +573,7 @@ describe('ContextMenu', () => {
         expect(parseInt(contextSubMenu.offset().top, 10)).toBeAroundValue(parseInt(item.offset().top, 10) - 1);
         expect(parseInt(contextSubMenu.offset().left, 10)).toBeGreaterThan(contextMenuRoot.offset().left + contextMenuRoot.width() - 30); // 30 - scroll
         done();
-      }, 350); // menu opens after 300ms
+      }, 700); // menu opens after 700ms
     });
 
     it('should open subMenu on the left-top of main menu if there\'s no free space on bottom', (done) => {
@@ -666,7 +600,7 @@ describe('ContextMenu', () => {
         expect(contextSubMenu.offset().top + contextSubMenu.height() - 28).toBeAroundValue(item.offset().top);
         expect(contextSubMenu.offset().left).toBeLessThan(contextMenuRoot.offset().left - contextSubMenu.width() + 30); // 30 - scroll
         done();
-      }, 350); // menu opens after 300ms
+      }, 800); // menu opens after 800ms
     });
 
     it('should open subMenu on the right-top of main menu if there\'s no free space on bottom', (done) => {
@@ -693,7 +627,7 @@ describe('ContextMenu', () => {
         expect(contextSubMenu.offset().top + contextSubMenu.height() - 28).toBeAroundValue(item.offset().top);
         expect(contextSubMenu.offset().left).toBeGreaterThan(contextMenuRoot.offset().left + contextMenuRoot.width() - 30); // 30 - scroll
         done();
-      }, 350); // menu opens after 300ms
+      }, 900); // menu opens after 900ms
     });
   });
 
@@ -2631,7 +2565,7 @@ describe('ContextMenu', () => {
 
         expect($('.htContextMenu').is(':visible')).toBe(false);
         done();
-      }, 350); // waits for submenu open delay
+      }, 1000); // waits for submenu open delay
     });
   });
 
@@ -2738,7 +2672,10 @@ describe('ContextMenu', () => {
       expect(hot2.getPlugin('contextMenu').isEnabled()).toBe(false);
 
       contextMenu();
-      expect($('.htContextMenu').is(':visible')).toBe(true);
+
+      setTimeout(() => {
+        expect($('.htContextMenu').is(':visible')).toBe(true);
+      }, 1100);
 
       function contextMenu2() {
         var hot = spec().$container2.data('handsontable');
