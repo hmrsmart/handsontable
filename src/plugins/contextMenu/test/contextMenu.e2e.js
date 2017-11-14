@@ -12,6 +12,58 @@ describe('ContextMenu', () => {
     }
   });
 
+  it('should update context menu items by calling `updateSettings` method', (done) => {
+    var hot = handsontable({
+      contextMenu: ['row_above', 'row_below', '---------', 'remove_row'],
+      height: 100
+    });
+
+    contextMenu();
+
+    var items = $('.htContextMenu tbody td');
+    var actions = items.not('.htSeparator');
+    var separators = items.filter('.htSeparator');
+
+    expect(actions.length).toEqual(3);
+    expect(separators.length).toEqual(1);
+
+    expect(actions.text()).toEqual([
+      'Insert row above',
+      'Insert row below',
+      'Remove row',
+    ].join(''));
+
+    hot.updateSettings({
+      contextMenu: {
+        items: {
+          remove_col: true,
+          hsep1: '---------',
+          custom: {name: 'My custom item'},
+        }
+      }
+    });
+
+    setTimeout(() => {
+      var header = $('.ht_clone_top thead th');
+
+      header.simulate('mousedown');
+      contextMenu();
+
+      items = $('.htContextMenu tbody td');
+      actions = items.not('.htSeparator');
+      separators = items.filter('.htSeparator');
+
+      expect(actions.length).toEqual(2);
+      expect(separators.length).toEqual(1);
+
+      expect(actions.text()).toEqual([
+        'Remove column',
+        'My custom item',
+      ].join(''));
+      done();
+    }, 300);
+  });
+
   describe('menu opening', () => {
     it('should open menu after right click on table cell', () => {
       var hot = handsontable({
