@@ -79,6 +79,54 @@ describe('manualColumnFreeze', () => {
 
       expect(actions.text()).not.toContain('Freeze this column');
     });
+
+    it('should not change plugin settings when using updateSettings enabled another plugin', () => {
+      var hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(10, 10),
+        contextMenu: true,
+        manualColumnFreeze: true
+      });
+
+      contextMenu();
+
+      var plugin = hot.getPlugin('manualColumnFreeze');
+      plugin.freezeColumn(4);
+
+      expect(hot.getSettings().fixedColumnsLeft).toEqual(1);
+      expect(plugin.fixedColumnsLeft).toEqual(1);
+
+      hot.updateSettings({
+        copyPaste: true
+      });
+
+      expect(hot.getSettings().fixedColumnsLeft).toEqual(1);
+      expect(plugin.fixedColumnsLeft).toEqual(1);
+      expect(plugin.columnsMapper.getValueByIndex(0)).toEqual(4);
+    });
+
+    it('should reset fixedColumnsLeft when disable plugin', () => {
+      var hot = handsontable({
+        data: Handsontable.helper.createSpreadsheetData(10, 10),
+        contextMenu: true,
+        manualColumnFreeze: true,
+        fixedColumnsLeft: 3
+      });
+
+      contextMenu();
+
+      var plugin = hot.getPlugin('manualColumnFreeze');
+      plugin.freezeColumn(8);
+
+      expect(hot.getSettings().fixedColumnsLeft).toEqual(4);
+      expect(plugin.fixedColumnsLeft).toEqual(1);
+
+      hot.updateSettings({
+        manualColumnFreeze: false
+      });
+
+      expect(hot.getSettings().fixedColumnsLeft).toEqual(3);
+      expect(plugin.fixedColumnsLeft).toEqual(0);
+    });
   });
 
   describe('freezeColumn', () => {

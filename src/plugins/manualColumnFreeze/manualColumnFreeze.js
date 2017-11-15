@@ -34,7 +34,13 @@ class ManualColumnFreeze extends BasePlugin {
      *
      * @type {RowsMapper}
      */
-    this.columnsMapper = new ColumnsMapper(this);
+    this.columnsMapper = new ColumnsMapper();
+    /**
+     * Number of fixed columns by the plugin itself
+     *
+     * @type {Number}
+     */
+    this.fixedColumnsLeft = 0;
   }
 
   /**
@@ -69,12 +75,20 @@ class ManualColumnFreeze extends BasePlugin {
    */
   disablePlugin() {
     let priv = privatePool.get(this);
+    let settings = this.hot.getSettings();
+
+    if (!settings.manualColumnFreeze) {
+      if (settings.fixedColumnsLeft) {
+        settings.fixedColumnsLeft -= this.fixedColumnsLeft;
+      }
+
+      this.columnsMapper.clearMap();
+      this.frozenColumnsBasePositions.length = 0;
+      this.fixedColumnsLeft = 0;
+    }
 
     priv.afterFirstUse = false;
     priv.moveByFreeze = false;
-
-    this.columnsMapper.clearMap();
-    this.frozenColumnsBasePositions.length = 0;
 
     super.disablePlugin();
   }
@@ -85,6 +99,8 @@ class ManualColumnFreeze extends BasePlugin {
   updatePlugin() {
     this.disablePlugin();
     this.enablePlugin();
+
+    this.updateColumnsMapper();
 
     super.updatePlugin();
   }
@@ -113,6 +129,7 @@ class ManualColumnFreeze extends BasePlugin {
     let to = settings.fixedColumnsLeft;
 
     settings.fixedColumnsLeft++;
+    this.fixedColumnsLeft++;
 
     this.columnsMapper.swapIndexes(column, to);
   }
@@ -138,6 +155,7 @@ class ManualColumnFreeze extends BasePlugin {
 
     priv.moveByFreeze = true;
     settings.fixedColumnsLeft--;
+    this.fixedColumnsLeft--;
 
     this.columnsMapper.swapIndexes(column, returnCol);
   }
@@ -201,7 +219,6 @@ class ManualColumnFreeze extends BasePlugin {
 
     if (columnsMapperLen === 0) {
       this.columnsMapper.createMap(countCols || this.hot.getSettings().startCols);
-
     }
   }
 

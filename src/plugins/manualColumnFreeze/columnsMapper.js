@@ -1,5 +1,4 @@
 import arrayMapper from './../../mixins/arrayMapper';
-import {arrayFilter} from './../../helpers/array';
 import {mixin} from './../../helpers/object';
 import {rangeEach} from './../../helpers/number';
 
@@ -8,15 +7,6 @@ import {rangeEach} from './../../helpers/number';
  * @plugin manualColumnFreeze
  */
 class ColumnsMapper {
-  constructor(manualColumnFreeze) {
-    /**
-     * Instance of manualColumnFreeze plugin.
-     *
-     * @type {manualColumnFreeze}
-     */
-    this.manualColumnFreeze = manualColumnFreeze;
-  }
-
   /**
    * Reset current map array and create new one.
    *
