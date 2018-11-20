@@ -36,7 +36,7 @@ export default function dateValidator(value, callback) {
   if (isValidDate && !isValidFormat) {
     if (this.correctFormat === true) { // if format correction is enabled
       const correctedValue = correctFormat(valueToValidate, this.dateFormat);
-      const row = this.instance.runHooks('unmodifyRow', this.row);
+      const row = this.instance.runHooks('unmodifyRow', this.row) || this.row;
       const column = this.instance.runHooks('unmodifyCol', this.col);
 
       this.instance.setDataAtCell(row, column, correctedValue, 'dateValidator');
