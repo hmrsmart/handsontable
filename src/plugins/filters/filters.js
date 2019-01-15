@@ -590,7 +590,7 @@ class Filters extends BasePlugin {
       this.components.get('filter_by_value').saveState(physicalIndex);
       this.saveHiddenRowsCache(physicalIndex);
 
-      this.trimRowsPlugin.trimmedRows.length = 0;
+      this.trimRowsPlugin.untrimAll();
       this.filter();
     }
     this.dropdownMenuPlugin.close();

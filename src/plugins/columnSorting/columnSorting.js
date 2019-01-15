@@ -4,7 +4,7 @@ import {
 } from '../../helpers/dom/element';
 import { isUndefined, isDefined } from '../../helpers/mixed';
 import { isObject } from '../../helpers/object';
-import { arrayMap } from '../../helpers/array';
+import { arrayMap, arrayEach } from '../../helpers/array';
 import { rangeEach } from '../../helpers/number';
 import BasePlugin from '../_base';
 import { registerPlugin } from './../../plugins';
@@ -79,8 +79,6 @@ Hooks.getSingleton().register('afterColumnSort');
  *     }
  *   }
  * }]```
- *
- * @dependencies ObserveChanges
  */
 class ColumnSorting extends BasePlugin {
   constructor(hotInstance) {
@@ -140,11 +138,44 @@ class ColumnSorting extends BasePlugin {
       return;
     }
 
-    if (isUndefined(this.hot.getSettings().observeChanges)) {
-      this.enableObserveChangesPlugin();
-    }
+    this.addHook('beforeTrimRow', (currentTrimConfig, destinationTrimConfig, isValidConfig) => {
+      // Preparing list of all rows which will be additionally trimmed.
+      const extraTrimmedRows = destinationTrimConfig
+        .filter(rowIndex => !currentTrimConfig.includes(rowIndex))
+        .concat(currentTrimConfig.filter(rowIndex => !destinationTrimConfig.includes(rowIndex)));
 
-    this.addHook('afterTrimRow', () => this.sortByPresetSortStates());
+      if (extraTrimmedRows.length > 0 && isValidConfig) {
+        const actualBlockTranslationFlag = this.blockPluginTranslation;
+
+        this.blockPluginTranslation = true;
+
+        // Checking physical indexes (without applying sort action) for all visible rows.
+        const physicalIndexes = arrayMap(Array.from(Array(this.hot.countRows())
+          .keys()), visualRow => this.hot.toPhysicalRow(visualRow));
+
+        this.blockPluginTranslation = actualBlockTranslationFlag;
+
+        const filteredIndexes = [];
+        const cachedIndexes = [];
+
+        // Reducing list of indexes which will be visible after trim and caching order of trimmed indexes.
+        arrayEach(this.rowsMapper._arrayMap, (sortingPhysicalIndex) => {
+          if (extraTrimmedRows.includes(physicalIndexes[sortingPhysicalIndex])) {
+            cachedIndexes.push(physicalIndexes[sortingPhysicalIndex]);
+
+          } else {
+            filteredIndexes.push(sortingPhysicalIndex);
+          }
+        }, []);
+
+        // Sorting indexes as integers.
+        const sortedIndexes = [...filteredIndexes].sort((sortingPhysicalIndex1, sortingPhysicalIndex2) => sortingPhysicalIndex1 - sortingPhysicalIndex2);
+
+        // Reducing indexes to pattern `from 1 to n`, where `n` is last visual index (`n-1` is number of visible rows).
+        this.rowsMapper._arrayMap = filteredIndexes.map(index => sortedIndexes.indexOf(index));
+      }
+    });
+
     this.addHook('afterUntrimRow', () => this.sortByPresetSortStates());
     this.addHook('modifyRow', (row, source) => this.onModifyRow(row, source));
     this.addHook('unmodifyRow', (row, source) => this.onUnmodifyRow(row, source));
@@ -639,22 +670,6 @@ class ColumnSorting extends BasePlugin {
       // Extra render for headers. Their width may change.
       this.hot.render();
     }
-  }
-
-  /**
-   * Enables the ObserveChanges plugin.
-   *
-   * @private
-   */
-  enableObserveChangesPlugin() {
-    const _this = this;
-
-    this.hot._registerTimeout(
-      setTimeout(() => {
-        _this.hot.updateSettings({
-          observeChanges: true
-        });
-      }, 0));
   }
 
   /**

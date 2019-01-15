@@ -1,5 +1,5 @@
 import BasePlugin from '../_base';
-import { arrayEach } from '../../helpers/array';
+import { arrayEach, arrayReduce } from '../../helpers/array';
 import { rangeEach } from '../../helpers/number';
 import { registerPlugin } from '../../plugins';
 import RowsMapper from './rowsMapper';
@@ -294,6 +294,21 @@ class TrimRows extends BasePlugin {
    */
   onAfterRemoveRow() {
     this.rowsMapper.unshiftItems(this.removedRows);
+
+    // Optimize!
+    arrayEach(this.removedRows, (physicalIndex) => {
+      this.trimmedRows = arrayReduce(this.trimmedRows, (accumulator, trimmedRow) => {
+        if (trimmedRow === physicalIndex) {
+          return accumulator;
+        }
+
+        if (trimmedRow > physicalIndex) {
+          return accumulator.concat(trimmedRow - 1);
+        }
+
+        return accumulator.concat(trimmedRow);
+      }, []);
+    });
   }
 
   /**
