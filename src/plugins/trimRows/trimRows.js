@@ -1,5 +1,5 @@
 import BasePlugin from '../_base';
-import { arrayEach, arrayReduce } from '../../helpers/array';
+import { arrayMap } from '../../helpers/array';
 import { rangeEach } from '../../helpers/number';
 import { registerPlugin } from '../../plugins';
 import RowsMapper from './rowsMapper';
@@ -330,21 +330,9 @@ class TrimRows extends BasePlugin {
    */
   onAfterRemoveRow() {
     this.rowsMapper.unshiftItems(this.removedRows);
-
-    // Optimize!
-    arrayEach(this.removedRows, (physicalIndex) => {
-      this.trimmedRows = arrayReduce(this.trimmedRows, (accumulator, trimmedRow) => {
-        if (trimmedRow === physicalIndex) {
-          return accumulator;
-        }
-
-        if (trimmedRow > physicalIndex) {
-          return accumulator.concat(trimmedRow - 1);
-        }
-
-        return accumulator.concat(trimmedRow);
-      }, []);
-    });
+    // TODO: Maybe it can be optimized? N x M checks, where N is number of already trimmed rows and M is number of removed rows.
+    // Decreasing physical indexes (some of them should be updated, because few indexes are missing in new list of indexes after removal).
+    this.trimmedRows = arrayMap(this.trimmedRows, trimmedRow => trimmedRow - this.removedRows.filter(removedRow => removedRow < trimmedRow).length);
   }
 
   /**
