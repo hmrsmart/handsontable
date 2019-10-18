@@ -29,7 +29,7 @@
  * FROM USE OR INABILITY TO USE THIS SOFTWARE.
  * 
  * Version: 7.2.1
- * Release date: 16/10/2019 (built at 16/10/2019 09:50:41)
+ * Release date: 16/10/2019 (built at 18/10/2019 13:16:19)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -1093,7 +1093,11 @@ function isChildOf(child, parent) {
   var queriedParents = [];
 
   if (typeof parent === 'string') {
-    queriedParents = Array.prototype.slice.call(child.ownerDocument.querySelectorAll(parent), 0);
+    if (child.defaultView) {
+      queriedParents = Array.prototype.slice.call(child.querySelectorAll(parent), 0);
+    } else {
+      queriedParents = Array.prototype.slice.call(child.ownerDocument.querySelectorAll(parent), 0);
+    }
   } else {
     queriedParents.push(parent);
   }
@@ -2949,7 +2953,7 @@ __webpack_require__(12);
 
 __webpack_require__(15);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -3288,7 +3292,7 @@ if (NATIVE_WEAK_MAP && IS_IE11) {
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.getListenersCounter = getListenersCounter;
@@ -3304,7 +3308,7 @@ var _object = __webpack_require__(3);
 
 var _feature = __webpack_require__(74);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 /**
  * Counter which tracks unregistered listeners (useful for detecting memory leaks).
@@ -4186,113 +4190,6 @@ addToUnscopables('includes');
 
 "use strict";
 
-var $ = __webpack_require__(21);
-var toAbsoluteIndex = __webpack_require__(126);
-var toInteger = __webpack_require__(86);
-var toLength = __webpack_require__(52);
-var toObject = __webpack_require__(60);
-var arraySpeciesCreate = __webpack_require__(160);
-var createProperty = __webpack_require__(107);
-var arrayMethodHasSpeciesSupport = __webpack_require__(108);
-
-var max = Math.max;
-var min = Math.min;
-var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
-var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
-
-// `Array.prototype.splice` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.splice
-// with adding support of @@species
-$({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('splice') }, {
-  splice: function splice(start, deleteCount /* , ...items */) {
-    var O = toObject(this);
-    var len = toLength(O.length);
-    var actualStart = toAbsoluteIndex(start, len);
-    var argumentsLength = arguments.length;
-    var insertCount, actualDeleteCount, A, k, from, to;
-    if (argumentsLength === 0) {
-      insertCount = actualDeleteCount = 0;
-    } else if (argumentsLength === 1) {
-      insertCount = 0;
-      actualDeleteCount = len - actualStart;
-    } else {
-      insertCount = argumentsLength - 2;
-      actualDeleteCount = min(max(toInteger(deleteCount), 0), len - actualStart);
-    }
-    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER) {
-      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
-    }
-    A = arraySpeciesCreate(O, actualDeleteCount);
-    for (k = 0; k < actualDeleteCount; k++) {
-      from = actualStart + k;
-      if (from in O) createProperty(A, k, O[from]);
-    }
-    A.length = actualDeleteCount;
-    if (insertCount < actualDeleteCount) {
-      for (k = actualStart; k < len - actualDeleteCount; k++) {
-        from = k + actualDeleteCount;
-        to = k + insertCount;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
-    } else if (insertCount > actualDeleteCount) {
-      for (k = len - actualDeleteCount; k > actualStart; k--) {
-        from = k + actualDeleteCount - 1;
-        to = k + insertCount - 1;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-    }
-    for (k = 0; k < insertCount; k++) {
-      O[k + actualStart] = arguments[k + 2];
-    }
-    O.length = len - actualDeleteCount + insertCount;
-    return A;
-  }
-});
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $ = __webpack_require__(21);
-var global = __webpack_require__(35);
-var userAgent = __webpack_require__(168);
-
-var slice = [].slice;
-var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
-
-var wrap = function (scheduler) {
-  return function (handler, timeout /* , ...arguments */) {
-    var boundArgs = arguments.length > 2;
-    var args = boundArgs ? slice.call(arguments, 2) : undefined;
-    return scheduler(boundArgs ? function () {
-      // eslint-disable-next-line no-new-func
-      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
-    } : handler, timeout);
-  };
-};
-
-// ie9- setTimeout & setInterval additional parameters fix
-// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
-$({ global: true, bind: true, forced: MSIE }, {
-  // `setTimeout` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-  setTimeout: wrap(global.setTimeout),
-  // `setInterval` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-  setInterval: wrap(global.setInterval)
-});
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
 
 exports.__esModule = true;
 exports.stopImmediatePropagation = stopImmediatePropagation;
@@ -4371,7 +4268,15 @@ function pageY(event) {
   }
 
   var rootWindow = event.target.ownerDocument.defaultView;
-  return event.clientY + (0, _element.getWindowScrollTop)(rootWindow);
+  var frame = rootWindow;
+  var offset = (0, _element.getWindowScrollTop)(frame);
+
+  while (frame.frameElement) {
+    frame = frame.frameElement.ownerDocument.defaultView;
+    offset -= (0, _element.getWindowScrollTop)(frame);
+  }
+
+  return event.clientY + offset;
 }
 /**
  * Check if provided event was triggered by clicking the right mouse button.
@@ -4395,6 +4300,113 @@ function isRightClick(event) {
 function isLeftClick(event) {
   return event.button === 0;
 }
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__(21);
+var toAbsoluteIndex = __webpack_require__(126);
+var toInteger = __webpack_require__(86);
+var toLength = __webpack_require__(52);
+var toObject = __webpack_require__(60);
+var arraySpeciesCreate = __webpack_require__(160);
+var createProperty = __webpack_require__(107);
+var arrayMethodHasSpeciesSupport = __webpack_require__(108);
+
+var max = Math.max;
+var min = Math.min;
+var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
+
+// `Array.prototype.splice` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.splice
+// with adding support of @@species
+$({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('splice') }, {
+  splice: function splice(start, deleteCount /* , ...items */) {
+    var O = toObject(this);
+    var len = toLength(O.length);
+    var actualStart = toAbsoluteIndex(start, len);
+    var argumentsLength = arguments.length;
+    var insertCount, actualDeleteCount, A, k, from, to;
+    if (argumentsLength === 0) {
+      insertCount = actualDeleteCount = 0;
+    } else if (argumentsLength === 1) {
+      insertCount = 0;
+      actualDeleteCount = len - actualStart;
+    } else {
+      insertCount = argumentsLength - 2;
+      actualDeleteCount = min(max(toInteger(deleteCount), 0), len - actualStart);
+    }
+    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER) {
+      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
+    }
+    A = arraySpeciesCreate(O, actualDeleteCount);
+    for (k = 0; k < actualDeleteCount; k++) {
+      from = actualStart + k;
+      if (from in O) createProperty(A, k, O[from]);
+    }
+    A.length = actualDeleteCount;
+    if (insertCount < actualDeleteCount) {
+      for (k = actualStart; k < len - actualDeleteCount; k++) {
+        from = k + actualDeleteCount;
+        to = k + insertCount;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
+    } else if (insertCount > actualDeleteCount) {
+      for (k = len - actualDeleteCount; k > actualStart; k--) {
+        from = k + actualDeleteCount - 1;
+        to = k + insertCount - 1;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+    }
+    for (k = 0; k < insertCount; k++) {
+      O[k + actualStart] = arguments[k + 2];
+    }
+    O.length = len - actualDeleteCount + insertCount;
+    return A;
+  }
+});
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(21);
+var global = __webpack_require__(35);
+var userAgent = __webpack_require__(168);
+
+var slice = [].slice;
+var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
+
+var wrap = function (scheduler) {
+  return function (handler, timeout /* , ...arguments */) {
+    var boundArgs = arguments.length > 2;
+    var args = boundArgs ? slice.call(arguments, 2) : undefined;
+    return scheduler(boundArgs ? function () {
+      // eslint-disable-next-line no-new-func
+      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+    } : handler, timeout);
+  };
+};
+
+// ie9- setTimeout & setInterval additional parameters fix
+// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+$({ global: true, bind: true, forced: MSIE }, {
+  // `setTimeout` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+  setTimeout: wrap(global.setTimeout),
+  // `setInterval` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+  setInterval: wrap(global.setInterval)
+});
+
 
 /***/ }),
 /* 34 */
@@ -4773,7 +4785,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(12);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -12950,7 +12962,7 @@ __webpack_require__(37);
 
 __webpack_require__(136);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.requestAnimationFrame = requestAnimationFrame;
@@ -13154,7 +13166,7 @@ __webpack_require__(137);
 
 __webpack_require__(40);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.isFunction = isFunction;
@@ -16142,7 +16154,7 @@ __webpack_require__(12);
 
 __webpack_require__(66);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -17666,7 +17678,7 @@ var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
 var _unicode = __webpack_require__(54);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var EDITOR_VISIBLE_CLASS_NAME = 'ht_editor_visible';
 var EDITOR_HIDDEN_CLASS_NAME = 'ht_editor_hidden';
@@ -37161,7 +37173,7 @@ __webpack_require__(12);
 
 __webpack_require__(66);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(79);
 
@@ -37173,7 +37185,7 @@ __webpack_require__(39);
 
 __webpack_require__(477);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = Core;
@@ -41191,7 +41203,7 @@ __webpack_require__(30);
 
 __webpack_require__(53);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -41457,7 +41469,7 @@ function htmlToGridSettings(element) {
   }
 
   var dataRows = [].concat(fixedRowsTop, (0, _toConsumableArray2.default)(Array.from(checkElement.tBodies).reduce(function (sections, section) {
-    sections.push.apply(sections, (0, _toConsumableArray2.default)(section.rows));
+    sections.push.apply(sections, (0, _toConsumableArray2.default)(Array.from(section.rows)));
     return sections;
   }, [])), (0, _toConsumableArray2.default)(fixedRowsBottom));
   countRows = dataRows.length;
@@ -42166,7 +42178,7 @@ var _mixed = __webpack_require__(28);
 
 var _object = __webpack_require__(3);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var ASC_SORT_STATE = 'asc';
 exports.ASC_SORT_STATE = ASC_SORT_STATE;
@@ -42353,7 +42365,7 @@ var _localHooks = _interopRequireDefault(__webpack_require__(59));
 
 var _predefinedItems = __webpack_require__(82);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var MIN_WIDTH = 215;
 /**
@@ -42373,7 +42385,8 @@ function () {
       className: '',
       keepInViewport: true,
       standalone: false,
-      minWidth: MIN_WIDTH
+      minWidth: MIN_WIDTH,
+      container: this.hot.rootDocument.documentElement
     };
     this.eventManager = new _eventManager.default(this);
     this.container = this.createContainer(this.options.name);
@@ -42404,9 +42417,14 @@ function () {
     value: function registerEvents() {
       var _this = this;
 
-      this.eventManager.addEventListener(this.hot.rootDocument.documentElement, 'mousedown', function (event) {
-        return _this.onDocumentMouseDown(event);
-      });
+      var frame = this.hot.rootWindow;
+
+      while (frame) {
+        this.eventManager.addEventListener(frame.document, 'mousedown', function (event) {
+          return _this.onDocumentMouseDown(event);
+        });
+        frame = frame.frameElement && frame.frameElement.ownerDocument.defaultView;
+      }
     }
     /**
      * Set array of objects which defines menu items.
@@ -42482,6 +42500,7 @@ function () {
         data: filteredItems,
         colHeaders: false,
         autoColumnSize: true,
+        autoWrapRow: false,
         modifyColWidth: function modifyColWidth(width) {
           if ((0, _mixed.isDefined)(width) && width < minWidthOfMenu) {
             return minWidthOfMenu;
@@ -42491,6 +42510,7 @@ function () {
         },
         autoRowSize: false,
         readOnly: true,
+        editor: false,
         copyPaste: false,
         columns: [{
           data: 'name',
@@ -42499,7 +42519,7 @@ function () {
           }
         }],
         renderAllRows: true,
-        fragmentSelection: 'cell',
+        fragmentSelection: false,
         disableVisualSelection: 'area',
         beforeKeyDown: function beforeKeyDown(event) {
           return _this2.onBeforeKeyDown(event);
@@ -42513,6 +42533,17 @@ function () {
         },
         rowHeights: function rowHeights(row) {
           return filteredItems[row].name === _predefinedItems.SEPARATOR ? 1 : 23;
+        },
+        afterOnCellContextMenu: function afterOnCellContextMenu(event) {
+          event.preventDefault();
+          (0, _event.stopImmediatePropagation)(event);
+
+          _this2.executeCommand(event);
+        },
+        beforeOnCellMouseUp: function beforeOnCellMouseUp(event) {
+          (0, _event.stopImmediatePropagation)(event);
+
+          _this2.executeCommand(event);
         }
       };
       this.origOutsideClickDeselects = this.hot.getSettings().outsideClickDeselects;
@@ -42586,7 +42617,8 @@ function () {
         parent: this,
         name: dataItem.name,
         className: this.options.className,
-        keepInViewport: true
+        keepInViewport: true,
+        container: this.options.container
       });
       subMenu.setMenuItems(dataItem.submenu.items);
       subMenu.open();
@@ -42710,7 +42742,7 @@ function () {
   }, {
     key: "setPosition",
     value: function setPosition(coords) {
-      var cursor = new _cursor.default(coords, this.hot.rootWindow);
+      var cursor = new _cursor.default(coords, this.container.ownerDocument.defaultView);
 
       if (this.options.keepInViewport) {
         if (cursor.fitsBelow(this.container)) {
@@ -42945,8 +42977,7 @@ function () {
           });
         }
       } else {
-        (0, _element.removeClass)(TD, 'htSubmenu');
-        (0, _element.removeClass)(TD, 'htDisabled');
+        (0, _element.removeClass)(TD, ['htSubmenu', 'htDisabled']);
 
         if (itemIsSelectionDisabled(item)) {
           this.eventManager.addEventListener(TD, 'mouseenter', function () {
@@ -42971,7 +43002,7 @@ function () {
     key: "createContainer",
     value: function createContainer() {
       var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var rootDocument = this.hot.rootDocument;
+      var doc = this.options.container.ownerDocument;
       var className = name;
       var container;
 
@@ -42988,18 +43019,18 @@ function () {
 
         className = className.replace(/[^A-z0-9]/g, '_');
         className = "".concat(this.options.className, "Sub_").concat(className);
-        container = rootDocument.querySelector(".".concat(this.options.className, ".").concat(className));
+        container = doc.querySelector(".".concat(this.options.className, ".").concat(className));
       }
 
       if (!container) {
-        container = rootDocument.createElement('div');
+        container = doc.createElement('div');
         (0, _element.addClass)(container, "htMenu ".concat(this.options.className));
 
         if (className) {
           (0, _element.addClass)(container, className);
         }
 
-        rootDocument.getElementsByTagName('body')[0].appendChild(container);
+        this.options.container.appendChild(container);
       }
 
       return container;
@@ -43168,16 +43199,12 @@ function () {
     value: function onDocumentMouseDown(event) {
       if (!this.isOpened()) {
         return;
-      }
-
-      if (this.container && (0, _element.isChildOf)(event.target, this.container)) {
-        this.executeCommand(event);
       } // Close menu when clicked element is not belongs to menu itself
 
 
       if (this.options.standalone && this.hotMenu && !(0, _element.isChildOf)(event.target, this.hotMenu.rootElement)) {
         this.close(true); // Automatically close menu when clicked element is not belongs to menu or submenu (not necessarily to itself)
-      } else if ((this.isAllSubMenusClosed() || this.isSubMenu()) && !(0, _element.isChildOf)(event.target, '.htMenu') && (0, _element.isChildOf)(event.target, this.hot.rootDocument)) {
+      } else if ((this.isAllSubMenusClosed() || this.isSubMenu()) && !(0, _element.isChildOf)(event.target, '.htMenu') && ((0, _element.isChildOf)(event.target, this.container.ownerDocument) || (0, _element.isChildOf)(event.target, this.hot.rootDocument))) {
         this.close(true);
       }
     }
@@ -46596,7 +46623,13 @@ function (_Table) {
 
         if (trimmingElementParent && overflow.includes(trimmingOverflow)) {
           var cloneNode = trimmingElement.cloneNode(false);
-          trimmingElementParent.insertBefore(cloneNode, trimmingElement);
+
+          if (trimmingElement.nextElementSibling) {
+            trimmingElementParent.insertBefore(cloneNode, trimmingElement.nextElementSibling);
+          } else {
+            trimmingElementParent.appendChild(cloneNode);
+          }
+
           var cloneHeight = (0, _element.getComputedStyle)(cloneNode, rootWindow).height;
           trimmingElementParent.removeChild(cloneNode);
 
@@ -48191,7 +48224,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -48582,7 +48615,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(89);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -50638,7 +50671,7 @@ var _createClass2 = _interopRequireDefault(__webpack_require__(2));
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _object = __webpack_require__(3);
 
@@ -52086,7 +52119,7 @@ var _object = __webpack_require__(3);
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _textEditor = _interopRequireDefault(__webpack_require__(113));
 
@@ -52623,7 +52656,7 @@ exports.mouseDown = mouseDown;
 exports.mouseOver = mouseOver;
 exports.handleMouseEvent = handleMouseEvent;
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _src = __webpack_require__(25);
 
@@ -56675,7 +56708,7 @@ __webpack_require__(89);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -58920,7 +58953,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(12);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(55);
 
@@ -59768,7 +59801,7 @@ var unicodeHelpers = _interopRequireWildcard(__webpack_require__(54));
 
 var domHelpers = _interopRequireWildcard(__webpack_require__(8));
 
-var domEventHelpers = _interopRequireWildcard(__webpack_require__(33));
+var domEventHelpers = _interopRequireWildcard(__webpack_require__(31));
 
 var plugins = _interopRequireWildcard(__webpack_require__(501));
 
@@ -59802,7 +59835,7 @@ Handsontable.EventManager = _eventManager.default;
 Handsontable._getListenersCounter = _eventManager.getListenersCounter; // For MemoryLeak tests
 
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "16/10/2019 09:50:41";
+Handsontable.buildDate = "18/10/2019 13:16:19";
 Handsontable.version = "7.2.1"; // Export Hooks singleton
 
 Handsontable.hooks = _pluginHooks.default.getSingleton(); // TODO: Remove this exports after rewrite tests about this module
@@ -64466,7 +64499,7 @@ module.exports = _superPropBase;
 "use strict";
 
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 /**
  * autoResize - resizes a DOM element to the width and height of another DOM element
@@ -64775,7 +64808,7 @@ var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
 var _unicode = __webpack_require__(54);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _textEditor = _interopRequireDefault(__webpack_require__(113));
 
@@ -66469,7 +66502,7 @@ var _inherits2 = _interopRequireDefault(__webpack_require__(7));
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _unicode = __webpack_require__(54);
 
@@ -66957,7 +66990,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -66972,7 +67005,7 @@ var _unicode = __webpack_require__(54);
 
 var _function = __webpack_require__(75);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _index = __webpack_require__(41);
 
@@ -68232,7 +68265,7 @@ __webpack_require__(40);
 
 __webpack_require__(66);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(68);
 
@@ -68244,7 +68277,7 @@ __webpack_require__(48);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -69495,7 +69528,7 @@ var _src = __webpack_require__(25);
 
 var _unicode = __webpack_require__(54);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _editors = __webpack_require__(56);
 
@@ -69581,11 +69614,17 @@ function () {
     this.instance.addHook('afterDocumentKeyDown', function (event) {
       return _this.onAfterDocumentKeyDown(event);
     });
-    this.eventManager.addEventListener(this.instance.rootDocument.documentElement, 'keydown', function (event) {
-      if (!_this.destroyed) {
-        _this.instance.runHooks('afterDocumentKeyDown', event);
-      }
-    }); // Open editor when text composition is started (IME editor)
+    var frame = this.instance.rootWindow;
+
+    while (frame) {
+      this.eventManager.addEventListener(frame.document.documentElement, 'keydown', function (event) {
+        if (!_this.destroyed) {
+          _this.instance.runHooks('afterDocumentKeyDown', event);
+        }
+      });
+      frame = frame.frameElement && frame.frameElement.ownerDocument.defaultView;
+    } // Open editor when text composition is started (IME editor)
+
 
     this.eventManager.addEventListener(this.instance.rootDocument.documentElement, 'compositionstart', function (event) {
       if (!_this.destroyed && _this.activeEditor && !_this.activeEditor.isOpened() && _this.instance.isListening()) {
@@ -70168,7 +70207,7 @@ var _element = __webpack_require__(8);
 
 var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _src = _interopRequireDefault(__webpack_require__(25));
 
@@ -70712,6 +70751,10 @@ function () {
           _this2.activeWt = wt;
 
           _this2.instance.runHooks('beforeOnCellMouseUp', event, coords, TD);
+
+          if ((0, _event.isImmediatePropagationStopped)(event)) {
+            return;
+          }
 
           _this2.instance.runHooks('afterOnCellMouseUp', event, coords, TD);
 
@@ -73482,7 +73525,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -74201,7 +74244,7 @@ __webpack_require__(12);
 
 __webpack_require__(38);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -75064,7 +75107,7 @@ function getMappedFillHandleSetting(fillHandle) {
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -77023,7 +77066,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -78209,7 +78252,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -78387,7 +78430,7 @@ var _menu = _interopRequireDefault(__webpack_require__(179));
 
 var _plugins = __webpack_require__(20);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _element = __webpack_require__(8);
 
@@ -78509,7 +78552,7 @@ function (_BasePlugin) {
   (0, _createClass2.default)(ContextMenu, [{
     key: "isEnabled",
     value: function isEnabled() {
-      return this.hot.getSettings().contextMenu;
+      return !!this.hot.getSettings().contextMenu;
     }
     /**
      * Enables the plugin functionality for this Handsontable instance.
@@ -78532,7 +78575,8 @@ function (_BasePlugin) {
 
       this.menu = new _menu.default(this.hot, {
         className: 'htContextMenu',
-        keepInViewport: true
+        keepInViewport: true,
+        container: settings.uiContainer || this.hot.rootDocument.body
       });
       this.menu.addLocalHook('beforeOpen', function () {
         return _this2.onMenuBeforeOpen();
@@ -78554,6 +78598,9 @@ function (_BasePlugin) {
       });
       this.addHook('afterOnCellContextMenu', function (event) {
         return _this2.onAfterOnCellContextMenu(event);
+      });
+      this.addHook('afterSelection', function () {
+        return _this2.onAfterSelection.apply(_this2, arguments);
       });
       (0, _get2.default)((0, _getPrototypeOf2.default)(ContextMenu.prototype), "enablePlugin", this).call(this);
     }
@@ -78589,9 +78636,10 @@ function (_BasePlugin) {
      *
      * @param {Object|Event} position An object with `pageX` and `pageY` properties which contains values relative to
      *                                the top left of the fully rendered content area in the browser or with `clientX`
-     *                                and `clientY`  properties which contains values relative to the upper left edge
-     *                                of the content area (the viewport) of the browser window. This object is structurally
-     *                                compatible with native mouse event so it can be used either.
+     *                                and `clientY` properties which contains values relative to the upper left edge
+     *                                of the content area (the viewport) of the browser window. `target` property is
+     *                                also required. This object is structurally compatible with the native mouse event
+     *                                so it can be used either.
      */
 
   }, {
@@ -78608,9 +78656,26 @@ function (_BasePlugin) {
         return;
       }
 
+      var offsetTop = 0;
+      var offsetLeft = 0;
+
+      if (this.hot.rootDocument !== this.menu.container.ownerDocument) {
+        var frameElement = this.hot.rootWindow.frameElement;
+
+        var _frameElement$getBoun = frameElement.getBoundingClientRect(),
+            top = _frameElement$getBoun.top,
+            left = _frameElement$getBoun.left;
+
+        offsetTop = top;
+        offsetLeft = left;
+      } else {
+        offsetTop = -1 * (0, _element.getWindowScrollTop)(this.menu.hotMenu.rootWindow);
+        offsetLeft = -1 * (0, _element.getWindowScrollLeft)(this.menu.hotMenu.rootWindow);
+      }
+
       this.menu.setPosition({
-        top: parseInt((0, _event.pageY)(event), 10) - (0, _element.getWindowScrollTop)(this.hot.rootWindow),
-        left: parseInt((0, _event.pageX)(event), 10) - (0, _element.getWindowScrollLeft)(this.hot.rootWindow)
+        top: parseInt((0, _event.pageY)(event), 10) + offsetTop,
+        left: parseInt((0, _event.pageX)(event), 10) + offsetLeft
       }); // ContextMenu is not detected HotTableEnv correctly because is injected outside hot-table
 
       this.menu.hotMenu.isHotTableEnv = this.hot.isHotTableEnv; // Handsontable.eventManager.isHotTableEnv = this.hot.isHotTableEnv;
@@ -78698,6 +78763,19 @@ function (_BasePlugin) {
       (0, _array.arrayEach)(menuItems, function (command) {
         return _this3.commandExecutor.registerCommand(command.key, command);
       });
+    }
+    /**
+     * Callback for the `afterSelection` hook.
+     *
+     * @private
+     */
+
+  }, {
+    key: "onAfterSelection",
+    value: function onAfterSelection() {
+      if (this.menu.isOpened()) {
+        this.menu.close();
+      }
     }
     /**
      * On contextmenu listener.
@@ -79685,7 +79763,7 @@ var _createClass2 = _interopRequireDefault(__webpack_require__(2));
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 /**
  * Helper class for checking if element will fit at the desired side of cursor.
@@ -79992,6 +80070,13 @@ function (_BasePlugin) {
      */
 
     _this.rowsLimit = ROWS_LIMIT;
+    /**
+     * UI container for the secondary focusable element.
+     *
+     * @type {HTMLElement}
+     */
+
+    _this.uiContainer = _this.hot.rootDocument.body;
     privatePool.set((0, _assertThisInitialized2.default)(_this), {
       isTriggeredByCopy: false,
       isTriggeredByCut: false,
@@ -80026,14 +80111,18 @@ function (_BasePlugin) {
         return;
       }
 
-      var settings = this.hot.getSettings();
-      var priv = privatePool.get(this);
-      priv.isFragmentSelectionEnabled = settings.fragmentSelection;
+      var _this$hot$getSettings = this.hot.getSettings(),
+          settings = _this$hot$getSettings.copyPaste,
+          fragmentSelection = _this$hot$getSettings.fragmentSelection;
 
-      if ((0, _typeof2.default)(settings.copyPaste) === 'object') {
-        this.pasteMode = settings.copyPaste.pasteMode || this.pasteMode;
-        this.rowsLimit = settings.copyPaste.rowsLimit || this.rowsLimit;
-        this.columnsLimit = settings.copyPaste.columnsLimit || this.columnsLimit;
+      var priv = privatePool.get(this);
+      priv.isFragmentSelectionEnabled = !!fragmentSelection;
+
+      if ((0, _typeof2.default)(settings) === 'object') {
+        this.pasteMode = settings.pasteMode || this.pasteMode;
+        this.rowsLimit = isNaN(settings.rowsLimit) ? this.rowsLimit : settings.rowsLimit;
+        this.columnsLimit = isNaN(settings.columnsLimit) ? this.columnsLimit : settings.columnsLimit;
+        this.uiContainer = settings.uiContainer || this.uiContainer;
       }
 
       this.addHook('afterContextMenuDefaultOptions', function (options) {
@@ -80048,7 +80137,7 @@ function (_BasePlugin) {
       this.addHook('beforeKeyDown', function () {
         return _this2.onBeforeKeyDown();
       });
-      this.focusableElement = (0, _focusableElement.createElement)(this.hot.rootDocument);
+      this.focusableElement = (0, _focusableElement.createElement)(this.uiContainer);
       this.focusableElement.addLocalHook('copy', function (event) {
         return _this2.onCopy(event);
       }).addLocalHook('cut', function (event) {
@@ -80732,9 +80821,9 @@ var _element = __webpack_require__(8);
 var FocusableWrapper =
 /*#__PURE__*/
 function () {
-  function FocusableWrapper(rootDocument) {
+  function FocusableWrapper(container) {
     (0, _classCallCheck2.default)(this, FocusableWrapper);
-    this.rootDocument = rootDocument;
+    this.rootDocument = container.defaultView ? container : container.ownerDocument;
     /**
      * The main/operational focusable element.
      *
@@ -80756,6 +80845,7 @@ function () {
      */
 
     this.listenersCount = new WeakSet();
+    this.container = container;
   }
   /**
    * Switch to the secondary focusable element. Used when no any main focusable element is provided.
@@ -80765,7 +80855,7 @@ function () {
   (0, _createClass2.default)(FocusableWrapper, [{
     key: "useSecondaryElement",
     value: function useSecondaryElement() {
-      var el = createOrGetSecondaryElement(this.rootDocument);
+      var el = createOrGetSecondaryElement(this.container);
 
       if (!this.listenersCount.has(el)) {
         this.listenersCount.add(el);
@@ -80820,16 +80910,19 @@ function () {
 }();
 
 (0, _object.mixin)(FocusableWrapper, _localHooks.default);
-var refCounter = 0;
+var refCounter = new WeakMap();
 /**
  * Create and return the FocusableWrapper instance.
  *
+ * @param {HTMLElement} container
  * @returns {FocusableWrapper}
  */
 
-function createElement(rootDocument) {
-  var focusableWrapper = new FocusableWrapper(rootDocument);
-  refCounter += 1;
+function createElement(container) {
+  var focusableWrapper = new FocusableWrapper(container);
+  var counter = refCounter.get(container);
+  counter = isNaN(counter) ? 0 : counter;
+  refCounter.set(container, counter + 1);
   return focusableWrapper;
 }
 /**
@@ -80866,29 +80959,30 @@ var secondaryElements = new WeakMap();
 /**
  * Create and attach newly created focusable element to the DOM.
  *
+ * @param {HTMLElement} container
  * @returns {HTMLElement}
  */
 
-function createOrGetSecondaryElement(rootDocument) {
-  var secondaryElement = secondaryElements.get(rootDocument);
+function createOrGetSecondaryElement(container) {
+  var secondaryElement = secondaryElements.get(container);
 
   if (secondaryElement) {
     if (!secondaryElement.parentElement) {
-      this.rootDocument.body.appendChild(secondaryElement);
+      container.appendChild(secondaryElement);
     }
 
     return secondaryElement;
   }
 
-  var element = rootDocument.createElement('textarea');
-  secondaryElements.set(rootDocument, element);
-  element.id = 'HandsontableCopyPaste';
-  element.className = 'copyPaste';
+  var doc = container.defaultView ? container : container.ownerDocument;
+  var element = doc.createElement('textarea');
+  secondaryElements.set(container, element);
+  element.className = 'copyPaste HandsontableCopyPaste';
   element.tabIndex = -1;
   element.autocomplete = 'off';
   element.wrap = 'hard';
   element.value = ' ';
-  rootDocument.body.appendChild(element);
+  container.appendChild(element);
   return element;
 }
 /**
@@ -80903,24 +80997,29 @@ function destroyElement(wrapper) {
     return;
   }
 
-  if (refCounter > 0) {
-    refCounter -= 1;
+  var counter = refCounter.get(wrapper.container);
+  counter = isNaN(counter) ? 0 : counter;
+
+  if (counter > 0) {
+    counter -= 1;
   }
 
   deactivateElement(wrapper);
 
-  if (refCounter <= 0) {
-    refCounter = 0; // Detach secondary element from the DOM.
+  if (counter <= 0) {
+    counter = 0; // Detach secondary element from the DOM.
 
-    var secondaryElement = secondaryElements.get(wrapper.rootDocument);
+    var secondaryElement = secondaryElements.get(wrapper.container);
 
     if (secondaryElement && secondaryElement.parentNode) {
       secondaryElement.parentNode.removeChild(secondaryElement);
-      secondaryElements.delete(wrapper.rootDocument);
+      secondaryElements.delete(wrapper.container);
     }
 
     wrapper.mainElement = null;
   }
+
+  refCounter.set(wrapper.container, counter);
 }
 
 /***/ }),
@@ -80958,7 +81057,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(12);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(376);
 
@@ -82057,6 +82156,8 @@ var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
 var _plugins = __webpack_require__(20);
 
+var _event = __webpack_require__(31);
+
 /**
  * @description
  * Plugin used to scroll Handsontable by selecting a cell and dragging outside of the visible viewport.
@@ -82135,11 +82236,11 @@ function (_BasePlugin) {
         return;
       }
 
-      this.addHook('afterOnCellMouseDown', function () {
-        return _this2.setupListening();
+      this.addHook('afterOnCellMouseDown', function (event) {
+        return _this2.setupListening(event);
       });
-      this.addHook('afterOnCellCornerMouseDown', function () {
-        return _this2.setupListening();
+      this.addHook('afterOnCellCornerMouseDown', function (event) {
+        return _this2.setupListening(event);
       });
       this.registerEvents();
       (0, _get2.default)((0, _getPrototypeOf2.default)(DragToScroll.prototype), "enablePlugin", this).call(this);
@@ -82220,6 +82321,40 @@ function (_BasePlugin) {
       this.callback(diffX, diffY);
     }
     /**
+     * Enables listening on `mousemove` event.
+     *
+     * @private
+     */
+
+  }, {
+    key: "listen",
+    value: function listen() {
+      this.listening = true;
+    }
+    /**
+     * Disables listening on `mousemove` event.
+     *
+     * @private
+     */
+
+  }, {
+    key: "unlisten",
+    value: function unlisten() {
+      this.listening = false;
+    }
+    /**
+     * Returns current state of listening.
+     *
+     * @private
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "isListening",
+    value: function isListening() {
+      return this.listening;
+    }
+    /**
      * Registers dom listeners.
      *
      * @private
@@ -82230,13 +82365,21 @@ function (_BasePlugin) {
     value: function registerEvents() {
       var _this3 = this;
 
-      var rootDocument = this.hot.rootDocument;
-      this.eventManager.addEventListener(rootDocument, 'mouseup', function () {
-        return _this3.onMouseUp();
-      });
-      this.eventManager.addEventListener(rootDocument, 'mousemove', function (event) {
-        return _this3.onMouseMove(event);
-      });
+      var rootWindow = this.hot.rootWindow;
+      var frame = rootWindow;
+
+      while (frame) {
+        this.eventManager.addEventListener(frame.document, 'contextmenu', function () {
+          return _this3.unlisten();
+        });
+        this.eventManager.addEventListener(frame.document, 'mouseup', function () {
+          return _this3.unlisten();
+        });
+        this.eventManager.addEventListener(frame.document, 'mousemove', function (event) {
+          return _this3.onMouseMove(event);
+        });
+        frame = frame.frameElement && frame.frameElement.ownerDocument.defaultView;
+      }
     }
     /**
      * Unbinds the events used by the plugin.
@@ -82253,11 +82396,16 @@ function (_BasePlugin) {
      * On after on cell/cellCorner mouse down listener.
      *
      * @private
+     * @param {MouseEvent} event
      */
 
   }, {
     key: "setupListening",
-    value: function setupListening() {
+    value: function setupListening(event) {
+      if ((0, _event.isRightClick)(event)) {
+        return;
+      }
+
       var scrollHandler = this.hot.view.wt.wtTable.holder; // native scroll
 
       if (scrollHandler === this.hot.rootWindow) {
@@ -82279,7 +82427,7 @@ function (_BasePlugin) {
           scrollHandler.scrollTop += 20;
         }
       });
-      this.listening = true;
+      this.listen();
     }
     /**
      * 'mouseMove' event callback.
@@ -82291,20 +82439,11 @@ function (_BasePlugin) {
   }, {
     key: "onMouseMove",
     value: function onMouseMove(event) {
-      if (this.listening) {
-        this.check(event.clientX, event.clientY);
+      if (!this.isListening()) {
+        return;
       }
-    }
-    /**
-     * `onMouseUp` hook callback.
-     *
-     * @private
-     */
 
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp() {
-      this.listening = false;
+      this.check(event.clientX, event.clientY);
     }
     /**
      * Destroys the plugin instance.
@@ -82789,7 +82928,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -83650,7 +83789,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -83882,7 +84021,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -83907,7 +84046,7 @@ var _element = __webpack_require__(8);
 
 var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _array = __webpack_require__(4);
 
@@ -84567,7 +84706,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -85450,7 +85589,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -85682,7 +85821,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -85707,7 +85846,7 @@ var _element = __webpack_require__(8);
 
 var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _array = __webpack_require__(4);
 
@@ -86303,7 +86442,7 @@ __webpack_require__(30);
 
 __webpack_require__(15);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -86342,7 +86481,7 @@ var _pluginHooks = _interopRequireDefault(__webpack_require__(43));
 
 var _plugins = __webpack_require__(20);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _src = __webpack_require__(25);
 
@@ -87485,7 +87624,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(12);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -88690,7 +88829,7 @@ __webpack_require__(12);
 
 __webpack_require__(40);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -89558,7 +89697,7 @@ __webpack_require__(53);
 
 __webpack_require__(40);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(55);
 
@@ -89568,7 +89707,7 @@ __webpack_require__(39);
 
 __webpack_require__(48);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 var _typeof2 = _interopRequireDefault(__webpack_require__(44));
 
@@ -90459,7 +90598,7 @@ __webpack_require__(12);
 
 __webpack_require__(53);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -90845,7 +90984,7 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(0);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -91116,7 +91255,7 @@ __webpack_require__(40);
 
 __webpack_require__(66);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -91143,7 +91282,7 @@ var _number = __webpack_require__(17);
 
 var _object = __webpack_require__(3);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _utils = __webpack_require__(63);
 
@@ -92529,7 +92668,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(12);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(62);
 
@@ -92562,7 +92701,7 @@ var _eventManager = _interopRequireDefault(__webpack_require__(24));
 
 var _plugins = __webpack_require__(20);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _base = _interopRequireDefault(__webpack_require__(22));
 
@@ -94543,7 +94682,7 @@ var _plugins = __webpack_require__(20);
 
 var _pluginHooks = _interopRequireDefault(__webpack_require__(43));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _predefinedItems = __webpack_require__(82);
 
@@ -94712,7 +94851,8 @@ function (_BasePlugin) {
 
         _this2.menu = new _menu.default(_this2.hot, {
           className: 'htDropdownMenu',
-          keepInViewport: true
+          keepInViewport: true,
+          container: settings.uiContainer || _this2.hot.rootDocument.body
         });
 
         _this2.hot.runHooks('beforeDropdownMenuSetItems', menuItems);
@@ -94901,10 +95041,24 @@ function (_BasePlugin) {
       (0, _event.stopPropagation)(event);
 
       if ((0, _element.hasClass)(event.target, BUTTON_CLASS_NAME) && !this.menu.isOpened()) {
+        var offsetTop = 0;
+        var offsetLeft = 0;
+
+        if (this.hot.rootDocument !== this.menu.container.ownerDocument) {
+          var frameElement = this.hot.rootWindow.frameElement;
+
+          var _frameElement$getBoun = frameElement.getBoundingClientRect(),
+              top = _frameElement$getBoun.top,
+              left = _frameElement$getBoun.left;
+
+          offsetTop = top;
+          offsetLeft = left;
+        }
+
         var rect = event.target.getBoundingClientRect();
         this.open({
-          left: rect.left,
-          top: rect.top + event.target.offsetHeight + 3,
+          left: rect.left + offsetLeft,
+          top: rect.top + event.target.offsetHeight + 3 + offsetTop,
           width: rect.width,
           height: rect.height
         });
@@ -95041,7 +95195,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(19);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -96276,7 +96430,7 @@ __webpack_require__(12);
 
 __webpack_require__(15);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(55);
 
@@ -96495,6 +96649,8 @@ function (_BasePlugin) {
 
       this.trimRowsPlugin = this.hot.getPlugin('trimRows');
       this.dropdownMenuPlugin = this.hot.getPlugin('dropdownMenu');
+      var dropdownSettings = this.hot.getSettings().dropdownMenu;
+      var menuContainer = dropdownSettings && dropdownSettings.uiContainer || this.hot.rootDocument.body;
 
       var addConfirmationHooks = function addConfirmationHooks(component) {
         component.addLocalHook('accept', function () {
@@ -96521,7 +96677,8 @@ function (_BasePlugin) {
         var conditionComponent = new _condition.default(this.hot, {
           id: 'filter_by_condition',
           name: filterByConditionLabel,
-          addSeparator: false
+          addSeparator: false,
+          menuContainer: menuContainer
         });
         conditionComponent.addLocalHook('afterClose', function () {
           return _this2.onSelectUIClosed();
@@ -96540,7 +96697,8 @@ function (_BasePlugin) {
         var _conditionComponent = new _condition.default(this.hot, {
           id: 'filter_by_condition2',
           name: '',
-          addSeparator: true
+          addSeparator: true,
+          menuContainer: menuContainer
         });
 
         _conditionComponent.addLocalHook('afterClose', function () {
@@ -97399,7 +97557,7 @@ __webpack_require__(55);
 
 __webpack_require__(145);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -97420,7 +97578,7 @@ var _inherits2 = _interopRequireDefault(__webpack_require__(7));
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _array = __webpack_require__(4);
 
@@ -97458,7 +97616,9 @@ function (_BaseComponent) {
     _this.name = options.name;
     _this.addSeparator = options.addSeparator;
 
-    _this.elements.push(new _select.default(_this.hot));
+    _this.elements.push(new _select.default(_this.hot, {
+      menuContainer: options.menuContainer
+    }));
 
     _this.elements.push(new _input.default(_this.hot, {
       placeholder: C.FILTERS_BUTTONS_PLACEHOLDER_VALUE
@@ -98604,7 +98764,8 @@ function (_BaseUI) {
       this.menu = new _menu.default(this.hot, {
         className: 'htSelectUI htFiltersConditionsMenu',
         keepInViewport: false,
-        standalone: true
+        standalone: true,
+        container: this.options.menuContainer
       });
       this.menu.setMenuItems(this.items);
       var caption = new _base.default(this.hot, {
@@ -99186,7 +99347,7 @@ var _inherits2 = _interopRequireDefault(__webpack_require__(7));
 
 var _element = __webpack_require__(8);
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _array = __webpack_require__(4);
 
@@ -99462,7 +99623,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -99495,7 +99656,7 @@ var _function = __webpack_require__(75);
 
 var C = _interopRequireWildcard(__webpack_require__(11));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _base = _interopRequireDefault(__webpack_require__(117));
 
@@ -104135,7 +104296,7 @@ __webpack_require__(12);
 
 __webpack_require__(40);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(55);
 
@@ -104904,7 +105065,7 @@ __webpack_require__(10);
 
 __webpack_require__(37);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -106526,7 +106687,7 @@ __webpack_require__(23);
 
 __webpack_require__(16);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -107246,7 +107407,7 @@ __webpack_require__(15);
 
 __webpack_require__(40);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -108020,7 +108181,7 @@ __webpack_require__(12);
 
 __webpack_require__(40);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 exports.__esModule = true;
 exports.default = void 0;
@@ -108037,7 +108198,7 @@ var _getPrototypeOf2 = _interopRequireDefault(__webpack_require__(5));
 
 var _inherits2 = _interopRequireDefault(__webpack_require__(7));
 
-var _event = __webpack_require__(33);
+var _event = __webpack_require__(31);
 
 var _array = __webpack_require__(4);
 
@@ -108591,7 +108752,7 @@ var _interopRequireDefault = __webpack_require__(0);
 
 __webpack_require__(15);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(10);
 
@@ -108778,7 +108939,7 @@ __webpack_require__(15);
 
 __webpack_require__(53);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(79);
 
@@ -109785,7 +109946,7 @@ __webpack_require__(15);
 
 __webpack_require__(53);
 
-__webpack_require__(31);
+__webpack_require__(32);
 
 __webpack_require__(79);
 

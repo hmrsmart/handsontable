@@ -29,7 +29,7 @@
  * FROM USE OR INABILITY TO USE THIS SOFTWARE.
  * 
  * Version: 7.2.1
- * Release date: 16/10/2019 (built at 16/10/2019 09:50:41)
+ * Release date: 16/10/2019 (built at 18/10/2019 13:16:19)
  */
 /**
  * Fix for bootstrap styles
@@ -1458,7 +1458,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
   overflow: hidden;
 }
 
-textarea#HandsontableCopyPaste {
+textarea.HandsontableCopyPaste {
   position: fixed !important;
   top: 0 !important;
   right: 100% !important;
