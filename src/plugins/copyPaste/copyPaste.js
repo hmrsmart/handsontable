@@ -100,6 +100,13 @@ class CopyPaste extends BasePlugin {
      */
     this.rowsLimit = ROWS_LIMIT;
 
+    /**
+     * UI container for the secondary focusable element.
+     *
+     * @type {HTMLElement}
+     */
+    this.uiContainer = this.hot.rootDocument.body;
+
     privatePool.set(this, {
       isTriggeredByCopy: false,
       isTriggeredByCut: false,
@@ -125,15 +132,16 @@ class CopyPaste extends BasePlugin {
     if (this.enabled) {
       return;
     }
-    const settings = this.hot.getSettings();
+    const { copyPaste: settings, fragmentSelection } = this.hot.getSettings();
     const priv = privatePool.get(this);
 
-    priv.isFragmentSelectionEnabled = settings.fragmentSelection;
+    priv.isFragmentSelectionEnabled = !!fragmentSelection;
 
-    if (typeof settings.copyPaste === 'object') {
-      this.pasteMode = settings.copyPaste.pasteMode || this.pasteMode;
-      this.rowsLimit = settings.copyPaste.rowsLimit || this.rowsLimit;
-      this.columnsLimit = settings.copyPaste.columnsLimit || this.columnsLimit;
+    if (typeof settings === 'object') {
+      this.pasteMode = settings.pasteMode || this.pasteMode;
+      this.rowsLimit = isNaN(settings.rowsLimit) ? this.rowsLimit : settings.rowsLimit;
+      this.columnsLimit = isNaN(settings.columnsLimit) ? this.columnsLimit : settings.columnsLimit;
+      this.uiContainer = settings.uiContainer || this.uiContainer;
     }
 
     this.addHook('afterContextMenuDefaultOptions', options => this.onAfterContextMenuDefaultOptions(options));
@@ -141,7 +149,7 @@ class CopyPaste extends BasePlugin {
     this.addHook('afterSelectionEnd', () => this.onAfterSelectionEnd());
     this.addHook('beforeKeyDown', () => this.onBeforeKeyDown());
 
-    this.focusableElement = createElement(this.hot.rootDocument);
+    this.focusableElement = createElement(this.uiContainer);
     this.focusableElement
       .addLocalHook('copy', event => this.onCopy(event))
       .addLocalHook('cut', event => this.onCut(event))
