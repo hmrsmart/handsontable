@@ -30,7 +30,11 @@ class FocusableWrapper {
      * @type {WeakSet}
      */
     this.listenersCount = new WeakSet();
-
+    /**
+     * Parent for an focusable element.
+     *
+     * @type {HTMLElement}
+     */
     this.container = container;
   }
 
@@ -151,7 +155,7 @@ function createOrGetSecondaryElement(container) {
   const element = doc.createElement('textarea');
 
   secondaryElements.set(container, element);
-  element.className = 'copyPaste HandsontableCopyPaste';
+  element.className = 'HandsontableCopyPaste';
   element.tabIndex = -1;
   element.autocomplete = 'off';
   element.wrap = 'hard';
