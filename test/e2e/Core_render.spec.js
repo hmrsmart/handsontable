@@ -59,6 +59,7 @@ describe('Core_render', () => {
     const currentSelection = spec().$container.find('.wtBorder.current')[0];
     const left = currentSelection.offsetLeft;
     const paths = getRenderedBorderPaths(document.body);
+
     expect(paths.length).toEqual(1);
     expect(paths[0].length).toBeGreaterThan(0);
 
@@ -66,6 +67,7 @@ describe('Core_render', () => {
     render();
 
     const newPaths = getRenderedBorderPaths(document.body);
+
     expect(currentSelection.offsetLeft).toBeGreaterThan(left);
     expect(newPaths.length).toEqual(paths.length);
     expect(newPaths[0].length).toBeGreaterThan(0);

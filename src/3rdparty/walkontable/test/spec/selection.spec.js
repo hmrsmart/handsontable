@@ -102,6 +102,7 @@ describe('Walkontable.Selection', () => {
     wt.draw();
 
     const paths = spec().$wrapper.find('svg path');
+
     expect(paths.length).toBe(4);
 
     expect(getRenderedBorderPaths(spec().$wrapper.find('.ht_master')[0])).withContext('ht_master')
@@ -141,6 +142,7 @@ describe('Walkontable.Selection', () => {
     wt.draw();
 
     const paths = spec().$wrapper.find('svg path');
+
     expect(paths.length).toBe(4);
 
     expect(getRenderedBorderPaths(spec().$wrapper.find('.ht_master')[0])).withContext('ht_master')
@@ -168,9 +170,11 @@ describe('Walkontable.Selection', () => {
     wt.selections.getCell().add(new Walkontable.CellCoords(0, 0));
 
     const $td1 = spec().$table.find('tbody td:eq(0)');
+
     expect($td1.hasClass('current')).toEqual(false);
 
     wt.draw();
+
     expect($td1.hasClass('current')).toEqual(true);
   });
 
@@ -192,13 +196,16 @@ describe('Walkontable.Selection', () => {
     const $td1 = spec().$table.find('tbody tr:eq(1) td:eq(0)');
     const $td2 = spec().$table.find('tbody tr:eq(2) td:eq(1)');
     const $corner = $(wt.selections.getCell().getSelectionHandle(wt).corner); // cheat... get border for ht_master
+
     $td1.simulate('mousedown');
 
     const pos1 = $corner.position();
+
     expect(pos1.top).toBeGreaterThan(0);
     expect(pos1.left).toBe(45);
 
     $td2.simulate('mousedown');
+
     const pos2 = $corner.position();
 
     expect(pos2.top).toBeGreaterThan(pos1.top);
@@ -212,9 +219,11 @@ describe('Walkontable.Selection', () => {
       totalColumns: getTotalColumns,
       selections: createSelectionController(),
     });
+
     wt.draw();
 
     wt.selections.getCell().add([20, 0]);
+
     expect(wt.wtTable.getCoords(spec().$table.find('tbody tr:first td:first')[0])).toEqual(new Walkontable.CellCoords(0, 0));
   });
 
@@ -233,6 +242,7 @@ describe('Walkontable.Selection', () => {
 
     wt.selections.getCell().add(new Walkontable.CellCoords(0, 0));
     wt.draw();
+
     expect(wt.wtTable.getFirstVisibleRow()).toEqual(0);
 
     wt.scrollViewportVertically(17);
@@ -244,6 +254,7 @@ describe('Walkontable.Selection', () => {
     expect(wt.wtTable.getLastVisibleRow()).toBeAroundValue(17);
 
     wt.selections.getCell().clear();
+
     expect(wt.wtTable.getFirstVisibleRow()).toEqual(expectedFirstVisibleRow);
     expect(wt.wtTable.getLastVisibleRow()).toBeAroundValue(17);
   });

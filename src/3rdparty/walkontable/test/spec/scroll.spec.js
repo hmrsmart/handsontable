@@ -292,17 +292,21 @@ describe('WalkontableScroll', () => {
       wt.draw();
 
       const svgPaths = spec().$wrapper.find('svg:eq(0) path[stroke-width="2"]');
+
       expect(svgPaths.length).toBe(1);
 
       const svgPath = svgPaths[0];
+
       expect(svgPath.getAttribute('d')).not.toBe('');
 
       wt.scrollViewport(new Walkontable.CellCoords(12, 0));
       wt.draw();
+
       expect(svgPath.getAttribute('d')).toBe('');
 
       wt.scrollViewport(new Walkontable.CellCoords(0, 0));
       wt.draw();
+
       expect(svgPath.getAttribute('d')).not.toBe('');
     });
 

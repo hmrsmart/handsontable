@@ -64,6 +64,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ top: THIN_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23.5 100 23.5']);
     });
 
@@ -71,6 +72,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ top: MEDIUM_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 100 23']);
     });
 
@@ -78,6 +80,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ top: THICK_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23.5 100 23.5']);
     });
 
@@ -85,6 +88,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ top: HUGE_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 100 23']);
     });
 
@@ -92,6 +96,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ top: GIGANTIC_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23.5 100 23.5']);
     });
   });
@@ -101,6 +106,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ bottom: THIN_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 46.5 100 46.5']);
     });
 
@@ -108,6 +114,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ bottom: MEDIUM_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 46 100 46']);
     });
 
@@ -115,6 +122,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ bottom: THICK_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 46.5 100 46.5']);
     });
 
@@ -122,6 +130,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ bottom: HUGE_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 46 100 46']);
     });
 
@@ -129,6 +138,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ bottom: GIGANTIC_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 46.5 100 46.5']);
     });
   });
@@ -138,6 +148,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ left: THIN_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49.5 23 49.5 47']);
     });
 
@@ -145,6 +156,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ left: MEDIUM_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 49 47']);
     });
 
@@ -152,6 +164,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ left: THICK_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49.5 23 49.5 47']);
     });
 
@@ -159,6 +172,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ left: HUGE_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 49 47']);
     });
 
@@ -166,6 +180,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ left: GIGANTIC_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49.5 23 49.5 47']);
     });
   });
@@ -175,6 +190,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ right: THIN_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47']);
     });
 
@@ -182,6 +198,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ right: MEDIUM_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47']);
     });
 
@@ -189,6 +206,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ right: THICK_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47']);
     });
 
@@ -196,6 +214,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ right: HUGE_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47']);
     });
 
@@ -203,6 +222,7 @@ describe('Walkontable Border Renderer', () => {
       const wt = generateWalkontableWithSelection({ right: GIGANTIC_GREEN_BORDER });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47']);
     });
   });
@@ -218,6 +238,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47 M 49.5 23 49.5 47', 'M 49 23.5 100 23.5 M 49 46.5 100 46.5']);
     });
 
@@ -230,6 +251,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47 M 49 23 49 47', 'M 48 23 100 23 M 48 46 100 46']);
     });
 
@@ -242,6 +264,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47 M 49.5 23 49.5 47', 'M 48 23.5 101 23.5 M 48 46.5 101 46.5']);
     });
 
@@ -254,6 +277,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47 M 49 23 49 47', 'M 47 23 101 23 M 47 46 101 46']);
     });
   });
@@ -269,6 +293,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23.5 100 23.5 M 49 46.5 100 46.5', 'M 99 23 99 47 M 49 23 49 47']);
     });
 
@@ -281,6 +306,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 100 23 M 49 46 100 46', 'M 99.5 22 99.5 47 M 49.5 22 49.5 47']);
     });
 
@@ -293,6 +319,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23.5 100 23.5 M 49 46.5 100 46.5', 'M 99 22 99 48 M 49 22 49 48']);
     });
 
@@ -305,6 +332,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 100 23 M 49 46 100 46', 'M 99.5 21 99.5 48 M 49.5 21 49.5 48']);
     });
   });
@@ -320,6 +348,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47 M 49.5 23 49.5 47', 'M 49 23 100 23 M 49 46 100 46']);
     });
 
@@ -332,6 +361,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47 M 49 23 49 47', 'M 48 23.5 100 23.5 M 48 46.5 100 46.5']);
     });
 
@@ -344,6 +374,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99.5 23 99.5 47 M 49.5 23 49.5 47', 'M 48 23 101 23 M 48 46 101 46']);
     });
 
@@ -356,6 +387,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 23 99 47 M 49 23 49 47', 'M 47 23.5 101 23.5 M 47 46.5 101 46.5']);
     });
   });
@@ -368,6 +400,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49.5 23 49.5 47', 'M 49 23.5 100 23.5']);
     });
 
@@ -378,6 +411,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 49 23 49 47', 'M 48 23 100 23']);
     });
   });
@@ -399,6 +433,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 0.5 0 0.5 24', 'M 49 0 49 24', 'M 0 0.5 50 0.5', 'M 0 23 50 23']);
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual(['1px solid green', '2px solid green', '3px solid green', '4px solid green']);
     });
@@ -420,6 +455,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 0.5 24 0.5 47', 'M 49 24 49 47', 'M 0 46 50 46']);
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual(['1px solid green', '2px solid green', '4px solid green']);
     });
@@ -441,6 +477,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 0 99 24', 'M 51 0.5 100 0.5', 'M 51 23 100 23']);
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual(['2px solid green', '3px solid green', '4px solid green']);
     });
@@ -463,6 +500,7 @@ describe('Walkontable Border Renderer', () => {
       });
 
       wt.draw();
+
       expect(getRenderedBorderPaths(spec().$wrapper[0])).toEqual(['M 99 24 99 47', 'M 51 46 100 46']);
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual(['2px solid green', '4px solid green']);
 
@@ -484,6 +522,7 @@ describe('Walkontable Border Renderer', () => {
       const expectedStrokeStyle = '1px solid green';
 
       wt.draw();
+
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual([expectedStrokeStyle]);
 
       const elem = document.querySelector(`svg path[data-stroke-style='${expectedStrokeStyle}']`);
@@ -505,6 +544,7 @@ describe('Walkontable Border Renderer', () => {
       const expectedStrokeStyle = '1px solid #0F0';
 
       wt.draw();
+
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual([expectedStrokeStyle]);
 
       const elem = document.querySelector(`svg path[data-stroke-style='${expectedStrokeStyle}']`);
@@ -526,6 +566,7 @@ describe('Walkontable Border Renderer', () => {
       const expectedStrokeStyle = '1px solid rgb(0%,   100%,   0%)';
 
       wt.draw();
+
       expect(getRenderedBorderStyles(spec().$wrapper[0])).toEqual([expectedStrokeStyle]);
 
       const elem = document.querySelector(`svg path[data-stroke-style='${expectedStrokeStyle}']`);
