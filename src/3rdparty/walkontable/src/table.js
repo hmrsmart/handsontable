@@ -80,7 +80,10 @@ class Table {
       cellRenderer: this.wot.wtSettings.settings.cellRenderer,
     });
 
-    this.borderRenderer = new BorderRenderer(this.spreader, this.createBorderPaddingObject());
+    this.borderRenderer = new BorderRenderer(this.spreader, {
+      padding: this.createBorderPaddingObject(),
+      cellGetter: coords => this.getCell(coords),
+    });
   }
 
   /**

@@ -8,13 +8,14 @@ const offsetToOverLapPrecedingBorder = -1;
  * Manages rendering of cell borders using SVG. Creates a single instance of SVG for each `Table`.
  */
 export default class BorderRenderer {
-  constructor(parentElement, padding) {
+  constructor(parentElement, options) {
     /**
      * SVG graphic will cover the area of the table element (element passed to the render function), minus the specified paddings.
      *
      * @type {object} Object with properties top, left, bottom, right
      */
-    this.padding = padding;
+    this.padding = options.padding;
+    this.cellGetter = options.cellGetter;
     /**
      * The SVG container element, where all SVG groups are rendered.
      *
@@ -307,7 +308,6 @@ export default class BorderRenderer {
    * Generates lines in format `[[x1, y1, x2, y2], ...]` based on input given as arguments, and stores them in `pathGroup.stylesAndLines`.
    *
    * @param {object} selectionSetting Settings provided in the same format as used by `Selection.setting`.
-   * @param {Function} getCellFn Function that returns a cell from the current overlay.
    * @param {object} selectionStart Object with properties row, col that represents the top left corner of the selection.
    * @param {object} selectionEnd Object with properties row, col that represents the bottom right corner of the selection.
    * @param {boolean} hasTopEdge TRUE if the range between `firstTd` and `lastTd` contains the top line, FALSE otherwise.
@@ -315,28 +315,28 @@ export default class BorderRenderer {
    * @param {boolean} hasBottomEdge TRUE if the range between `firstTd` and `lastTd` contains bottom top line, FALSE otherwise.
    * @param {boolean} hasLeftEdge TRUE if the range between `firstTd` and `lastTd` contains left top line, FALSE otherwise.
    */
-  convertArgsToLines(selectionSetting, getCellFn, selectionStart, selectionEnd, hasTopEdge, hasRightEdge, hasBottomEdge, hasLeftEdge) {
+  convertArgsToLines(selectionSetting, selectionStart, selectionEnd, hasTopEdge, hasRightEdge, hasBottomEdge, hasLeftEdge) {
     const layerNumber = this.getLayerNumber(selectionSetting);
     const stylesAndLines = this.ensurePathGroup(layerNumber).stylesAndLines;
 
     const isSingle = selectionStart.row === selectionEnd.row && selectionStart.col === selectionEnd.col;
     let addFirstTdWidth = 0;
     let addFirstTdHeight = 0;
-    let firstTd = getCellFn(selectionStart);
+    let firstTd = this.cellGetter(selectionStart);
 
     if (firstTd === -1) {
       selectionStart.row += 1;
-      firstTd = getCellFn(selectionStart);
+      firstTd = this.cellGetter(selectionStart);
       addFirstTdHeight = -1;
     }
     if (firstTd === -2) {
       selectionStart.row -= 1;
-      firstTd = getCellFn(selectionStart);
+      firstTd = this.cellGetter(selectionStart);
       addFirstTdHeight = 1;
     }
     if (firstTd === -4) {
       selectionStart.col -= 1;
-      firstTd = getCellFn(selectionStart);
+      firstTd = this.cellGetter(selectionStart);
       addFirstTdWidth = 1;
     }
 
@@ -352,20 +352,20 @@ export default class BorderRenderer {
       addLastTdWidth = addFirstTdWidth;
       addLastTdHeight = addFirstTdHeight;
     } else {
-      lastTd = getCellFn(selectionEnd);
+      lastTd = this.cellGetter(selectionEnd);
       if (lastTd === -1) {
         selectionEnd.row += 1;
-        lastTd = getCellFn(selectionEnd);
+        lastTd = this.cellGetter(selectionEnd);
         addLastTdHeight = -1;
       }
       if (lastTd === -2) {
         selectionEnd.row -= 1;
-        lastTd = getCellFn(selectionEnd);
+        lastTd = this.cellGetter(selectionEnd);
         addLastTdHeight = 1;
       }
       if (lastTd === -4) {
         selectionEnd.col -= 1;
-        lastTd = getCellFn(selectionEnd);
+        lastTd = this.cellGetter(selectionEnd);
         addLastTdWidth = 1;
       }
     }
