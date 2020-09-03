@@ -1,3 +1,4 @@
+import { sanitize } from 'dompurify';
 import { stringify } from './mixed';
 
 /**
@@ -87,5 +88,5 @@ const STRIP_TAGS_REGEX = /<\/?\w+\/?>|<\w+[\s|/][^>]*>/gi;
  * @returns {string}
  */
 export function stripTags(string) {
-  return `${string}`.replace(STRIP_TAGS_REGEX, '');
+  return sanitize(`${string}`); //`${string}`.replace(STRIP_TAGS_REGEX, '');
 }
