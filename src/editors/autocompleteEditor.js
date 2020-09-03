@@ -108,23 +108,58 @@ class AutocompleteEditor extends HandsontableEditor {
       renderer: (instance, TD, row, col, prop, value, cellProperties) => {
         getRenderer('text')(instance, TD, row, col, prop, value, cellProperties);
 
+        // We have to clear cell, maybe we should use base renderer instead of text?
+        TD.innerHTML = '';
+
         const { filteringCaseSensitive, allowHtml } = this.cellProperties;
         const query = this.query;
         let cellValue = stringify(value);
         let indexOfMatch;
         let match;
 
-        if (cellValue && !allowHtml) {
-          indexOfMatch = filteringCaseSensitive === true ?
-            cellValue.indexOf(query) : cellValue.toLowerCase().indexOf(query.toLowerCase());
-
-          if (indexOfMatch !== -1) {
-            match = cellValue.substr(indexOfMatch, query.length);
-            cellValue = cellValue.replace(match, `<strong>${match}</strong>`);
-          }
+        if (!cellValue){
+          return;
         }
 
-        TD.innerHTML = cellValue;
+        // If user want to use HTML we have nothing to do here
+        if (allowHtml) {
+          TD.insertAdjacentHTML('afterbegin', cellValue);
+
+          return;
+        }
+
+        let elementsToAppend = [];
+        indexOfMatch = filteringCaseSensitive === true ?
+          cellValue.indexOf(query) : cellValue.toLowerCase().indexOf(query.toLowerCase());
+
+        if (query && indexOfMatch !== -1) {
+          match = cellValue.substr(indexOfMatch, query.length);
+          let parts = cellValue.split(match);
+          elementsToAppend.push(...parts.map(part => document.createTextNode(part)));
+          let strongElement = document.createElement('strong');
+
+          strongElement.insertAdjacentText('afterbegin', match);
+          
+          elementsToAppend.splice(1, 0, strongElement);
+
+          elementsToAppend.forEach(element => {
+            if (element.TEXT_NODE === element.nodeType) {
+              if (element.length < 1) {
+                return;
+              }
+              TD.insertAdjacentText('beforeend', element.textContent)
+
+            } else {
+              TD.insertAdjacentElement('beforeend', element)
+            }
+
+          });
+
+        } else {
+          TD.insertAdjacentText('afterbegin', cellValue);
+
+          return;
+        }
       },
       autoColumnSize: true,
     });
