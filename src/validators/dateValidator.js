@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { getNormalizedDate } from '../helpers/date';
 import { getEditorInstance } from '../editors';
+import { registerValidator } from './index';
 
 /**
  * The Date cell validator.
@@ -72,3 +73,5 @@ export function correctFormat(value, dateFormat) {
 
   return date.format(dateFormat);
 }
+
+registerValidator('date', dateValidator);

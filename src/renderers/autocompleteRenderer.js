@@ -1,7 +1,7 @@
 import { addClass, hasClass } from './../helpers/dom/element';
 import EventManager from './../eventManager';
 import { CellCoords } from './../3rdparty/walkontable/src';
-import { getRenderer } from './index';
+import { getRenderer, registerRenderer } from './index';
 
 /**
  * Autocomplete renderer.
@@ -54,3 +54,5 @@ function autocompleteRenderer(instance, TD, row, col, prop, value, cellPropertie
 }
 
 export default autocompleteRenderer;
+
+registerRenderer('autocomplete', autocompleteRenderer);

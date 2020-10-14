@@ -89,6 +89,6 @@ module.exports = {
 
   ignore: [
     'src/3rdparty/walkontable/dist/',
-    'src/3rdparty/walkontable/test/dist/'
+    'src/3rdparty/walkontable/test/'
   ]
 };

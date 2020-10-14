@@ -6,7 +6,7 @@ import { deepExtend } from './../helpers/object';
 import EventManager from './../eventManager';
 import { isMetaKey } from './../helpers/unicode';
 import TextEditor from './textEditor';
-
+import { registerEditor } from './index';
 /**
  * @private
  * @class DateEditor
@@ -247,5 +247,7 @@ class DateEditor extends TextEditor {
     return options;
   }
 }
+
+registerEditor('date', DateEditor);
 
 export default DateEditor;
