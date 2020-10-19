@@ -5,7 +5,8 @@ jobs:
   test:
     name: Run TestCafe Tests
     runs-on: windows-latest
-     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v1
-
+    steps:
+      - name: Run tests
+        uses: DevExpress/testcafe-action@latest
+        with:
+            args: "chrome tests"
