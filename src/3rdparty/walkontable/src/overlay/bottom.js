@@ -116,13 +116,23 @@ export class BottomOverlay extends Overlay {
   repositionOverlay() {
     const { wtTable, rootDocument } = this.wot;
     const cloneRoot = this.clone.wtTable.holder.parentNode;
-    let scrollbarWidth = getScrollbarWidth(rootDocument);
+    const holderClientHeight = wtTable.holder.clientHeight;
+    const holderOffsetHeight = wtTable.holder.offsetHeight;
+    let bottomOffset = getScrollbarWidth(rootDocument);
 
-    if (wtTable.holder.clientHeight === wtTable.holder.offsetHeight) {
-      scrollbarWidth = 0;
+    if (holderClientHeight === holderOffsetHeight) {
+      const hiderOffsetHeight = wtTable.hider.offsetHeight;
+
+      // One from containers has greater height than all cells within the table (the `height` settings can stretch DOM element).
+      if (holderClientHeight > hiderOffsetHeight) {
+        bottomOffset = holderClientHeight - hiderOffsetHeight;
+
+      } else {
+        bottomOffset = 0;
+      }
     }
 
-    cloneRoot.style.bottom = `${scrollbarWidth}px`;
+    cloneRoot.style.bottom = `${bottomOffset}px`;
   }
 
   /**
