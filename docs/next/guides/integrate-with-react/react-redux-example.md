@@ -137,7 +137,7 @@ ReactDOM.render(
   <Provider store={reduxStore}>
     <App/>
   </Provider>,
-  document.getElementById('example1')
+  document.querySelector('#example1')
 );
 ```
 :::

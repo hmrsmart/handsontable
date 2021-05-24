@@ -338,7 +338,7 @@ This allows many possible usages: for example, you can easily calculate a total 
 
 ::: example #example12
 ```js
-const container = document.getElementById('example12');
+const container = document.querySelector('#example12');
 
 const hot12 = new Handsontable(container, {
   data: [

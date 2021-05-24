@@ -15,7 +15,7 @@ Let's start with a simple example of Handsontable instance initialized in a cont
 
 ::: example #example
 ```javascript
-const example = document.getElementById('example');
+const example = document.querySelector('#example');
 const hot1 = new Handsontable(example, {
   data: Handsontable.helper.createSpreadsheetData(100, 50),
   colWidths: 100,
@@ -34,7 +34,7 @@ const hot1 = new Handsontable(example, {
 <code-block title="JavaScript">
 
 ```js
-const example = document.getElementById('example');
+const example = document.querySelector('#example');
 const hot1 = new Handsontable(example, {
   data: Handsontable.helper.createSpreadsheetData(100, 50),
   colWidths: 100,
@@ -73,7 +73,7 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('example1'));
+ReactDOM.render(<App />, document.querySelector('#example1'));
 ```
 
 </code-block>

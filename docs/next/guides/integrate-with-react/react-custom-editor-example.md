@@ -62,6 +62,6 @@ const App = () => {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('example1'));
+ReactDOM.render(<App />, document.querySelector('#example1'));
 ```
 :::

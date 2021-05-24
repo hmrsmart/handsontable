@@ -22,7 +22,7 @@ Array of arrays is the most popular choice for the more grid-like scenarios wher
 
 ::: example #example1
 ```js
-const container = document.getElementById('example1');
+const container = document.querySelector('#example1');
 
 const data = [
   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
@@ -52,7 +52,7 @@ The following example shows how you would use the array of arrays with a selecti
 
 ::: example #example2
 ```js
-const container = document.getElementById('example2');
+const container = document.querySelector('#example2');
 
 const data = [
   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
@@ -89,7 +89,7 @@ An **array of objects** can be used as a data source as follows:
 
 ::: example #example3
 ```js
-const container = document.getElementById('example3');
+const container = document.querySelector('#example3');
 
 const data = [
   { id: 1, name: 'Ted Right', address: '' },
@@ -116,7 +116,7 @@ It is possible to define **columns** as a function. This is good practice when y
 
 ::: example #example4 .custom-class
 ```js
-const container = document.getElementById('example4');
+const container = document.querySelector('#example4');
 
 const data = [
   { id: 1, name: {first: "Ted", last: "Right"}, address: "" },
@@ -158,7 +158,7 @@ In a scenario where you have nested objects, you can use them as the data source
 
 ::: example #example5
 ```js
-const container = document.getElementById('example5');
+const container = document.querySelector('#example5');
 
 const data = [
   { id: 1, name: {first: "Ted", last: "Right"}, address: "" },
@@ -191,7 +191,7 @@ In a scenario where you start with an empty data source, you will need to provid
 
 ::: example #example6
 ```js
-const container = document.getElementById('example6');
+const container = document.querySelector('#example6');
 
 const hot = new Handsontable(container, {
   data: [],
@@ -221,7 +221,7 @@ The example below shows how to use such objects:
 
 ::: example #example7
 ```js
-const container = document.getElementById('example7');
+const container = document.querySelector('#example7');
 
 const hot = new Handsontable(container, {
   data: [
@@ -292,7 +292,7 @@ To avoid this scenario, copy the data before you pass it to the grid. To change 
 
 ::: example #example9
 ```js
-const container = document.getElementById('example9');
+const container = document.querySelector('#example9');
 
 const data = [
   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
@@ -316,7 +316,7 @@ When working with a copy of data for Handsontable, it is best practice is to clo
 
 ::: example #example10
 ```js
-const container = document.getElementById('example10');
+const container = document.querySelector('#example10');
 
 const data = [
   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],

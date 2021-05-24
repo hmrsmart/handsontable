@@ -1,6 +1,6 @@
 ---
 title: Custom Context Menu example
-metaTitle: Custom contest menu example - Guide - Handsontable Documentation
+metaTitle: Custom context menu example - Guide - Handsontable Documentation
 permalink: /next/react-custom-context-menu-example
 canonicalUrl: /react-custom-context-menu-example
 ---
@@ -48,5 +48,5 @@ const App = () => {
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('example1'));
+ReactDOM.render(<App />, document.querySelector('#example1'));
 ```

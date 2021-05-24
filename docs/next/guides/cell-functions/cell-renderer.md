@@ -29,7 +29,8 @@ It gives users a convenient way for defining which renderer should be used when 
 Use the renderer name of your choice when configuring the column:
 
 ```js
-const container = document.getElementById('container');
+const container = document.querySelector('#container');
+
 const hot = new Handsontable(container, {
   data: someData,
   columns: [{
@@ -96,6 +97,7 @@ From now on, you can use `customRenderer` like so:
 
 ```js
 const container = document.querySelector('#container');
+
 const hot = new Handsontable(container, {
   data: someData,
   columns: [{
@@ -136,7 +138,7 @@ const data = [
   }
 ];
 
-const container = document.getElementById('example1');
+const container = document.querySelector('#example1');
 const hot = new Handsontable(container, {
   data,
   colWidths: [200, 200, 200, 80],

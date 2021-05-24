@@ -129,7 +129,7 @@ const config = {
   licenseKey: 'non-commercial-and-evaluation'
 };
 
-const example1Events = document.getElementById("example1_events");
+const example1Events = document.querySelector('#example1_events');
 const hooksList = document.getElementById('hooksList');
 const hooks = Handsontable.hooks.getRegistered();
 
@@ -195,7 +195,7 @@ function log_events(event, data) {
   }
 }
 
-const example1 = document.getElementById('example1');
+const example1 = document.querySelector('#example1');
 const hot = new Handsontable(example1, config);
 
 document.querySelector('#check_select_all').addEventListener('click', function () {

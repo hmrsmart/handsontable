@@ -70,7 +70,7 @@ To initialize Handsontable with predefined custom borders, provide the cell coor
 
 ::: example #example3
 ```js
-const container = document.getElementById('example3');
+const container = document.querySelector('#example3');
 
 const hot = Handsontable(container, {
   data: Handsontable.helper.createSpreadsheetData(5, 6),

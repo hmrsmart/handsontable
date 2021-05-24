@@ -31,7 +31,7 @@ This demo shows how to use the cell type renderer feature to make some condition
 
 ::: example #example1
 ```js
-const container = document.getElementById('example1');
+const container = document.querySelector('#example1');
 
 const data = [
   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda'],
