@@ -97,7 +97,7 @@
     "pikaday": "1.8.0"
   },
   "optionalDependencies": {
-    "hyperformula": "^1.1.0"
+    "hyperformula": "file:./hyperformula-without-gpu-js.tgz"
   },
   "devDependencies": {
     "@actions/core": "^1.2.6",
