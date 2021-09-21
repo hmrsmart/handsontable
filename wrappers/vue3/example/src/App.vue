@@ -10,7 +10,8 @@
 </template>
 <script>
 
-import {HotTable,HotColumn} from "../../dist/vue-handsontable";
+import {HotTable} from "../../src/HotTable";
+import {HotColumn} from "../../src/HotColumn";
 
 // <!--&lt;!&ndash;        <StarsRating></StarsRating>&ndash;&gt;-->
 // <!--&lt;!&ndash;        <ColorPicker></ColorPicker>&ndash;&gt;-->
