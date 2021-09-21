@@ -2,6 +2,11 @@ import Handsontable from 'handsontable';
 import BaseEditorComponent from '../src/BaseEditorComponent.vue';
 
 describe('BaseEditorComponent.ts', () => {
+
+  it('', () => {
+
+  });
+
   it('should have all of the props that the Handsontable Base Editor assigns in its `prepare` method nulled', () => {
     const baseEditorComponentInstance = new BaseEditorComponent();
 
@@ -17,7 +22,7 @@ describe('BaseEditorComponent.ts', () => {
   it('should have all of the Base Editor\'s method defined', () => {
     const baseEditorComponentInstance = new BaseEditorComponent();
 
-    Object.getOwnPropertyNames(Handsontable.editors.BaseEditor.prototype).forEach(propName => {
+    Object.getOwnPropertyNames(Handsontable.editors.BaseEditor.prototype).forEach((propName) => {
       // _hooksStorage is an internal container, not needed on the vue base editor
       if (propName === 'constructor' || propName === '_hooksStorage') {
         return;

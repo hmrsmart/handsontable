@@ -11,6 +11,8 @@ import { LRUMap } from '../src/lib/lru/lru';
 // @ts-ignore
 import { createApp, defineComponent, h } from 'vue';
 
+// todo any
+
 describe('hotInit', () => {
   it('should initialize Handsontable and assign it to the `hotInstace` property of the provided object', () => {
     const testWrapper = mount(HotTable, {
@@ -698,18 +700,6 @@ xdescribe('Non-HOT based CRUD actions', () => {
         return {
           data: createSampleData(4, 4)
         }
-      },
-      methods: {
-        add () {
-          this.data.push(this.data[0], this.data[0]);
-          this.data[0].push('test', 'test');
-        },
-        remove () {
-          this.data.pop();
-          this.data.pop();
-          this.data[0].pop();
-          this.data[0].pop();
-        },
       },
     });
 

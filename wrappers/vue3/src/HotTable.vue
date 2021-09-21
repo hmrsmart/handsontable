@@ -1,6 +1,10 @@
 <template>
   <div :id="id">
-    <slot></slot>
+<!--    <slot></slot> todo: thrown an error-->
+<!--    runtime-core.esm-bundler.js?5c40:6719 Uncaught TypeError: Cannot read properties of null (reading 'isCE')-->
+<!--    at Module.renderSlot (runtime-core.esm-bundler.js?892f:5789)-->
+<!--    at Proxy.render (vue-handsontable.js?5990:889)-->
+<!--    This is internal in -->
   </div>
 </template>
 
@@ -11,25 +15,21 @@ import {
   prepareSettings,
   createVueComponent,
   findVNodeByType,
-  getHotColumnComponents,
   HOT_DESTROYED_WARNING,
 } from './helpers';
 import {
-  HotTableData,
-  HotTableMethods,
   HotTableProps,
-  HotTableComponent,
   EditorComponent,
 } from './types';
 import * as packageJson from '../package.json';
 import { LRUMap } from './lib/lru/lru';
 import Handsontable from 'handsontable';
 
+//todo
 type VNode = any
 type Vue = any
 
 const HotTable = {
-  name: 'HotTable',
   props: propFactory('HotTable'),
   provide() {
     return {
@@ -54,7 +54,7 @@ const HotTable = {
           ) {
             // If the dataset dimensions change, update the index mappers.
             this.matchHotMappersSize();
-            
+
             // Data is automatically synchronized by reference.
             delete value.data;
           }
@@ -166,7 +166,7 @@ const HotTable = {
           }
         }
       }
-      
+
       if (isColumnModificationAllowed) {
         indexMapperColumnCount = this.hotInstance.columnIndexMapper.getNumberOfIndexes();
 
@@ -215,7 +215,7 @@ const HotTable = {
       const hotColumns: any[] = Array.from(this.columnsCache.values());
       let usesRendererComponent = false;
       let columnSettings: HotTableProps[] = []
-      
+
       for (let elem of hotColumns) {
         if (elem.usesRendererComponent) {
           usesRendererComponent = true;
@@ -230,7 +230,7 @@ const HotTable = {
         console.warn('Your `hot-table` configuration includes both `hot-column` and `autoRowSize`/`autoColumnSize`, which are not compatible with each other ' +
           'in this version of `@handsontable/vue`. Disable `autoRowSize` and `autoColumnSize` to prevent row and column misalignment.');
       }
-      
+
       return columnSettings.length ? columnSettings : void 0;
     },
     /**

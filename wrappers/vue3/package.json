@@ -45,7 +45,7 @@
     "url": "https://github.com/handsontable/handsontable/issues"
   },
   "peerDependencies": {
-    "handsontable": ">=9.0.0",
+    "handsontable": "9.0.2",
     "vue": "next"
   },
   "devDependencies": {
@@ -63,10 +63,9 @@
     "cross-env": "^5.2.0",
     "css-loader": "^3.0.0",
     "del-cli": "^3.0.1",
-    "handsontable": "^9.0.0",
+    "handsontable": "9.0.2",
     "jest": "^26.6.3",
     "rollup": "^2.0.0",
-    "vue-class-component": "8.0.0-rc.1",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-cleanup": "^3.1.1",
     "rollup-plugin-commonjs": "^10.0.0",
@@ -80,6 +79,7 @@
     "ts-jest": "^26.5.6",
     "typescript": "3.8.2",
     "vue": "^3.2.12",
+    "vue-class-component": "8.0.0-rc.1",
     "vue-jest": "5.0.0-alpha.10",
     "vue-router": "4.0.11",
     "vuex": "4.0.2"

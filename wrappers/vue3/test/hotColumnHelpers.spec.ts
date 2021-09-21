@@ -6,7 +6,6 @@ import { h } from 'vue';
 import { createStore } from 'vuex';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { createVueComponent } from '../helpers';
 
 describe('findVNodeByType', () => {
   it('should get the VNode child of the `hot-column` component.', () => {

@@ -2,6 +2,35 @@
 import Handsontable from 'handsontable';
 import { Options, Vue } from 'vue-class-component';
 
+
+// export default createEditorComponent(component) => {}; //todo
+// export default createRendererComponent(component) => {}; //todo
+
+/*
+const myEditor = createEditorComponent({
+  beginEditing(){
+    return false;
+  }
+});
+
+const MyAdminComponent = { template:`
+<HotTable>
+  <HotColumn> 
+    <MyEditor />
+  </HotColumn>
+</HotTable>
+`,
+components:{
+MyEditor:myEditor
+}
+}
+const hotSettings = { columns:[
+{
+editor: myEditor
+}
+];
+ */
+
 @Options({})
 class BaseEditorComponent extends Vue implements Handsontable._editors.Base {
   name = 'BaseEditorComponent.ts';
@@ -15,7 +44,7 @@ class BaseEditorComponent extends Vue implements Handsontable._editors.Base {
   state = null;
   hot = null;
 
-  mounted() {
+  mounted() { // move logic to: createEditorComponent
     const _this = this;
 
     this.$data.hotCustomEditorClass = function () {
