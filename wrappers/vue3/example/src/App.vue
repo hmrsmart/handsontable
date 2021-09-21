@@ -1,22 +1,19 @@
 <template>
   <div id="advanced-editor-example" class="hot">
-    <HotTable :settings="hotSettings">
-<!--      <HotColumn :width="150">-->
-<!--&lt;!&ndash;        <StarsRating></StarsRating>&ndash;&gt;-->
-<!--      </HotColumn>-->
-<!--      <HotColumn v-for="n in 2" :width="150" v-bind:key="'col' + n">-->
-<!--&lt;!&ndash;        <ColorPicker></ColorPicker>&ndash;&gt;-->
-<!--      </HotColumn>-->
+    <HotTable :settings="hotSettings"> ;)
+      <HotColumn :width="150">
+      </HotColumn>
+      <HotColumn v-for="n in 2" :width="150" v-bind:key="'col' + n">
+      </HotColumn>
     </HotTable>
   </div>
 </template>
 <script>
 
-import {HotTable} from "../../dist/vue-handsontable";
-  
-console.log(HotTable)
-  debugger;
+import {HotTable,HotColumn} from "../../dist/vue-handsontable";
 
+// <!--&lt;!&ndash;        <StarsRating></StarsRating>&ndash;&gt;-->
+// <!--&lt;!&ndash;        <ColorPicker></ColorPicker>&ndash;&gt;-->
 
 export default {
   data: function() {
@@ -34,7 +31,7 @@ export default {
         copyPaste: false,
         licenseKey: "non-commercial-and-evaluation",
         rowHeaders: true,
-        colHeaders: ["Rating", "Active star color", "Inactive star color"],
+        colHeaders: true,
         autoRowSize: false,
         autoColumnSize: false
       }
@@ -46,6 +43,7 @@ export default {
   methods: {},
   components: {
     HotTable,
+    HotColumn
     // HotColumn,
     // ColorPicker,
     // StarsRating

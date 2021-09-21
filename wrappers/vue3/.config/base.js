@@ -1,10 +1,10 @@
-import nodeResolve from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
-import replace from 'rollup-plugin-replace';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
+import replace from '@rollup/plugin-replace';
 import VuePlugin from 'rollup-plugin-vue';
 import typescript from 'rollup-plugin-typescript2';
-import json from 'rollup-plugin-json';
-import commonjs from 'rollup-plugin-commonjs';
+import json from '@rollup/plugin-json';
+import commonjs from '@rollup/plugin-commonjs';
 
 export const plugins = {
   replace: replace({

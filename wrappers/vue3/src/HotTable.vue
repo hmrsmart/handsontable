@@ -1,14 +1,17 @@
 <template>
   <div :id="id">
-<!--    <slot></slot> todo: thrown an error-->
-<!--    runtime-core.esm-bundler.js?5c40:6719 Uncaught TypeError: Cannot read properties of null (reading 'isCE')-->
-<!--    at Module.renderSlot (runtime-core.esm-bundler.js?892f:5789)-->
-<!--    at Proxy.render (vue-handsontable.js?5990:889)-->
-<!--    This is internal in -->
+    <slot></slot>
   </div>
 </template>
 
 <script lang="ts">
+
+// todo: comments in a template causes an error: `[Vue warn]: Invalid VNode type: Symbol(Comment) (symbol)`
+// <!--    <slot></slot> todo: thrown an error-->
+// <!--    runtime-core.esm-bundler.js?5c40:6719 Uncaught TypeError: Cannot read properties of null (reading 'isCE')-->
+// <!--    at Module.renderSlot (runtime-core.esm-bundler.js?892f:5789)-->
+// <!--    at Proxy.render (vue-handsontable.js?5990:889)-->
+// <!--    This is internal in -->
 import {
   propFactory,
   preventInternalEditWatch,

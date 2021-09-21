@@ -10,8 +10,8 @@
   "dependencies": {
     "@vue/cli-service": "^4.5.13",
     "handsontable": "9.0.2",
-    "vue": "next",
-    "vuex": "next"
+    "vue": "3.2.13",
+    "vuex": "4.0.2"
   },
   "eslintConfig": {
     "root": true,
