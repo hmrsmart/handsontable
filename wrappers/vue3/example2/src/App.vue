@@ -8,10 +8,10 @@
     </HotTable>
   </div>
 </template>
+
 <script>
 
 import {HotTable,HotColumn} from "../../dist/vue-handsontable";
-import Test from "./Test";
 
 // <!--&lt;!&ndash;        <StarsRating></StarsRating>&ndash;&gt;-->
 // <!--&lt;!&ndash;        <ColorPicker></ColorPicker>&ndash;&gt;-->
@@ -43,7 +43,6 @@ export default {
   },
   methods: {},
   components: {
-    Test,
     HotTable,
     HotColumn
     // ColorPicker,
