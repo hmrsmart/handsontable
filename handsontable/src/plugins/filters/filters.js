@@ -462,7 +462,7 @@ export class Filters extends BasePlugin {
     const visualIndex = this.hot.toVisualColumn(column);
     const data = [];
 
-    arrayEach(this.hot.getSourceDataAtCol(visualIndex), (value, rowIndex) => {
+    arrayEach(this.hot.getDataAtCol(visualIndex), (value, rowIndex) => {
       const { row, col, visualCol, visualRow, type, instance, dateFormat, locale } = this.hot
         .getCellMeta(rowIndex, visualIndex);
 
