@@ -128,6 +128,8 @@ export class Overlay {
    * @returns {{top: number, start: number}|undefined}
    */
   getRelativeCellPosition(element, rowIndex, columnIndex) {
+    debugger;
+
     if (this.clone.wtTable.holder.contains(element) === false) {
       warn(`The provided element is not a child of the ${this.type} overlay`);
 
@@ -195,8 +197,10 @@ export class Overlay {
     if (!onFixedColumn) {
       horizontalOffset = spreaderOffset.start;
 
+    } else if (this.isRtl()) {
+      horizontalOffset = this.wot.wtTable.wtRootElement.offsetParent.offsetWidth - absoluteRootElementPosition.left - absoluteRootElementPosition.width;
     } else {
-      horizontalOffset = absoluteRootElementPosition.start <= 0 ? (-1) * absoluteRootElementPosition.start : 0;
+      horizontalOffset = absoluteRootElementPosition.left <= 0 ? (-1) * absoluteRootElementPosition.left : 0;
     }
 
     if (onFixedRowTop) {
