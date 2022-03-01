@@ -24,10 +24,15 @@ export function autocompleteRenderer(instance, TD, row, col, prop, value, cellPr
   const rendererFunc = cellProperties.allowHtml ? htmlRenderer : textRenderer;
   const ARROW = rootDocument.createElement('DIV');
 
+  const delimiter = cellProperties.delimiter ?? ',';
+  // if (typeof cellProperties.delimiter === 'undefined') {
+  //   cellProperties.delimiter = ',';
+  // }
+
   ARROW.className = 'htAutocompleteArrow';
   ARROW.appendChild(rootDocument.createTextNode(String.fromCharCode(9660)));
 
-  rendererFunc.apply(this, [instance, TD, row, col, prop, value, cellProperties]);
+  rendererFunc.apply(this, [instance, TD, row, col, prop, Array.isArray(value) ? value.join(delimiter) : value, cellProperties]);
 
   if (!TD.firstChild) { // http://jsperf.com/empty-node-if-needed
     // otherwise empty fields appear borderless in demo/renderers.html (IE)

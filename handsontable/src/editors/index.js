@@ -4,6 +4,7 @@ import { CheckboxEditor, EDITOR_TYPE as CHECKBOX_EDITOR } from './checkboxEditor
 import { DateEditor, EDITOR_TYPE as DATE_EDITOR } from './dateEditor';
 import { DropdownEditor, EDITOR_TYPE as DROPDOWN_EDITOR } from './dropdownEditor';
 import { HandsontableEditor, EDITOR_TYPE as HANDSONTABLE_EDITOR } from './handsontableEditor';
+import { MultiEditor, EDITOR_TYPE as MULTI_EDITOR } from './multiEditor';
 import { NumericEditor, EDITOR_TYPE as NUMERIC_EDITOR } from './numericEditor';
 import { PasswordEditor, EDITOR_TYPE as PASSWORD_EDITOR } from './passwordEditor';
 import { SelectEditor, EDITOR_TYPE as SELECT_EDITOR } from './selectEditor';
@@ -23,6 +24,7 @@ export function registerAllEditors() {
   registerEditor(DateEditor);
   registerEditor(DropdownEditor);
   registerEditor(HandsontableEditor);
+  registerEditor(MultiEditor);
   registerEditor(NumericEditor);
   registerEditor(PasswordEditor);
   registerEditor(SelectEditor);
@@ -37,6 +39,7 @@ export {
   DateEditor, DATE_EDITOR,
   DropdownEditor, DROPDOWN_EDITOR,
   HandsontableEditor, HANDSONTABLE_EDITOR,
+  MultiEditor, MULTI_EDITOR,
   NumericEditor, NUMERIC_EDITOR,
   PasswordEditor, PASSWORD_EDITOR,
   SelectEditor, SELECT_EDITOR,
